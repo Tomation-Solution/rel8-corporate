@@ -49,12 +49,13 @@ class RegisterAdminUser(ExtraAuthFucntionMixin,serializers.Serializer):
 class LoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
     password = serializers.CharField(trim_whitespace=False)
-
+    company_name = serializers.CharField(required=False,trim_whitespace=True)
     def validate(self, attrs):
         # here we would check if the email and password
         email = attrs.get("email")
         password = attrs.get("password")
         request = self.context.get("request")
+        company_name= attrs.get('company_name','')
         user =None
 
         try:
@@ -70,6 +71,13 @@ class LoginSerializer(serializers.Serializer):
         if not auth_user:
             raise serializers.ValidationError({"error":'Invalid Credentials'})
         
+        # UserMemberInfo
+        if user.user_type == 'members':
+            'here we validate his company namme'
+            member = user_models.Memeber.objects.get(user=user)
+            comapanyName = user_models.UserMemberInfo.objects.filter(member=member,name='names',).first()
+            if comapanyName.value != company_name.strip():
+                raise custom_exceptions.CustomError({'error':'member does not belong to this company'})
         attrs['user']=auth_user
         return attrs
 
