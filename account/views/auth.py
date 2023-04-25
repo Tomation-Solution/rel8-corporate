@@ -158,11 +158,13 @@ class Login(ObtainAuthToken):
                     'has_paid':user.prospectivememberprofile.has_paid,
                     'prospective_member_id':user.prospectivememberprofile.id,
                 })
-        if user.chapter:
-            chapter={
-                'name':user.chapter.name,
-                'id':user.chapter.id
-            }
+        # if user.chapter:
+        #     chapter={
+        #         'name':user.chapter.name,
+        #         'id':user.chapter.id
+        #     }
+        if auth_models.Chapters.objects.filter(user= user).exists():
+            chapter = auth_models.Chapters.objects.filter(user= user).values('name','id')
         if user.user_type =='members':
             exco =user_models.ExcoRole.objects.filter(
                 member= user.memeber
@@ -300,8 +302,10 @@ class ManageMemberValidation(viewsets.ViewSet):
         )
         if chapter_instance:
             "we going to add chapters if there is"
-            user.chapter  = chapter_instance
+            # user.chapter  = chapter_instance
             user.save()
+            chapter_instance.user.add(user)
+            chapter_instance.save()
 
         member = user_models.Memeber.objects.create(
             user =user,

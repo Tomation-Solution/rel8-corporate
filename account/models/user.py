@@ -93,7 +93,7 @@ class User(AbstractBaseUser,PermissionsMixin,):
     user_type = models.CharField(choices=UserType.choices,max_length=25)
     is_superuser = models.BooleanField(default=False)
     # any user that is in the app must belong to a distric 
-    chapter = models.ForeignKey(auth_related_models.Chapters,on_delete=models.SET_NULL,null=True)
+    # chapter = models.ForeignKey(auth_related_models.Chapters,on_delete=models.SET_NULL,null=True)
     # chapter = models.OneToOneField(auth_related_models.Chapters,on_delete=models.SET_NULL)
     # temp_password is use to save the owner password tempoary when he sign up but
     #  the moment he creates a alumni organization we would use his details to create an account in his alumni org and set him to super user
