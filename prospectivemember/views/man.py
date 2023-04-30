@@ -7,6 +7,7 @@ from utils.custom_exceptions import  CustomError
 from rest_framework.permissions import  IsAuthenticated,AllowAny
 from rest_framework.decorators import action
 from utils.permissions import IsMemberOrProspectiveMember,IsPropectiveMemberHasPaid
+from utils.permissions import  IsAdminOrSuperAdmin, IsProspectiveMember,IsPropectiveMembersHasPaid_general
 
 class CreateManPropectiveMemberViewset(viewsets.ViewSet):
     serializer_class = serializer.CreateManPropectiveMemberSerializer
@@ -64,3 +65,17 @@ class PropectiveMemberManageFormTwo(viewsets.ModelViewSet,StatusView):
         query_set = self.queryset.filter(prospective_member=self.request.user.manprospectivememberprofile)
         return query_set
 
+
+
+class AdminManageManProspectiveMemberViewSet(viewsets.ViewSet):
+    # queryset = man_prospective_model.p
+    permission_classes = [IsAuthenticated,IsAdminOrSuperAdmin]
+
+
+    @action(detail=False,methods=['get'])
+    def get_submissions(self,request,*args,**kwargs):
+
+        all_propective_member_profiles = manrelatedPropectiveModels.ManProspectiveMemberProfile.objects.filter(has_paid_subcription=True)
+        clean_data = serializer.ProspectiveManMemberCleaner(instance=all_propective_member_profiles,many=True)
+        
+        return Success_response('success',data=clean_data.data,)

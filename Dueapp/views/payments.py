@@ -19,7 +19,8 @@ from Rel8Tenant import models as rel8tenant_related_models
 from account.models.user import Memeber
 from django.contrib.auth import get_user_model
 from extras  import models as extras_models
-from prospectivemember.models.man_prospective_model import ManProspectiveMemberProfile,RegistrationAmountInfo
+from prospectivemember.models.man_prospective_model import( ManProspectiveMemberProfile,RegistrationAmountInfo,
+ManProspectiveMemberFormOne,)
 from mymailing import tasks as mymailing_task
 from prospectivemember.models import general as generalProspectiveModels
 from django.shortcuts import get_object_or_404
@@ -51,7 +52,88 @@ def very_payment(request,reference=None):
         return Success_response(msg="Recived the Request Succefully",)
     raise CustomError({"error":"Something Went Wrong Try Again"})
 
- 
+
+def calmanLevyFee(amount,is_in_lagos):
+    lagos_fee=0.00
+    if amount >=200000 or amount <= 2000000:
+        if is_in_lagos:
+            lagos_fee = 60000
+        return {'amountToBePaid':amount+lagos_fee,'lagos_fee':lagos_fee,'is_in_lagos':is_in_lagos}
+
+    if amount >=180000 or amount <= 160000:
+        if is_in_lagos:
+            lagos_fee = 30000
+        return {'amountToBePaid':amount+lagos_fee,'lagos_fee':lagos_fee,'is_in_lagos':is_in_lagos}
+
+def calMansPayment(form_one:ManProspectiveMemberFormOne):
+    is_in_lagos = False
+    amount = 0.00
+    if form_one.office_state.lower()=='lagos':
+        is_in_lagos =True
+    print({'form_one.current_sales_turnover':form_one.current_sales_turnover,'bool':int(form_one.current_sales_turnover) >=100000000 })
+    if int(form_one.current_sales_turnover) >=100000000 or int(form_one.current_sales_turnover) <= 249900000:
+        "line 11 in man docs"
+        
+        amount = 160000
+        return calmanLevyFee(amount,is_in_lagos)
+
+    if int(form_one.current_sales_turnover) >=250000000 or int(form_one.current_sales_turnover) <= 499900000:
+        "line 10 in man docs"
+        amount = 180000
+        return calmanLevyFee(amount,is_in_lagos)
+
+
+    if int(form_one.current_sales_turnover) >=500000000 or int(form_one.current_sales_turnover) <= 749900000:
+        "line 9 in man docs"
+        amount = 200000
+        return calmanLevyFee(amount,is_in_lagos)
+
+
+    if int(form_one.current_sales_turnover) >=750000000 or int(form_one.current_sales_turnover) <= 149000000:
+        "line 8 in man docs"
+        amount = 220000
+        return calmanLevyFee(amount,is_in_lagos)
+
+    if int(form_one.current_sales_turnover) >=1500000000 or int(form_one.current_sales_turnover) <= 3990000000:
+        "line 7 in man docs"
+        amount = 260000
+        return calmanLevyFee(amount,is_in_lagos)
+
+    if int(form_one.current_sales_turnover) >=4000000000 or int(form_one.current_sales_turnover) <= 6990000000:
+        "line 6 in man docs"
+        amount= 375000
+        return calmanLevyFee(amount,is_in_lagos)
+
+    if int(form_one.current_sales_turnover) >=7000000000 or int(form_one.current_sales_turnover) <= 9990000000:
+        "line 5 in man docs"
+        amount =  500000
+        return calmanLevyFee(amount,is_in_lagos)
+
+    if int(form_one.current_sales_turnover) >=10000000000 or int(form_one.current_sales_turnover) <= 14990000000:
+        "line 4 in man docs"
+        amount = 850000
+        return calmanLevyFee(amount,is_in_lagos)
+    
+    if int(form_one.current_sales_turnover) >=15000000000 or int(form_one.current_sales_turnover) <= 19990000000:
+        "line 3 in man docs"
+        amount=  1400000
+        return calmanLevyFee(amount,is_in_lagos)
+    
+    if int(form_one.current_sales_turnover) >=20000000000 or int(form_one.current_sales_turnover) <= 39990000000:
+        "line 2 in man docs"
+        amount= 1500000  
+        return calmanLevyFee(amount,is_in_lagos)
+
+    if int(form_one.current_sales_turnover) >= 40000000000:
+        "line 1 in man docs"
+        amount= 2000000
+        return calmanLevyFee(amount,is_in_lagos)
+
+    if amount == 0.00:
+        raise CustomError({'error':'please reach out to admin beacuse your sales turn over does not meet the set requirement'})
+
+
+
 class InitPaymentTran(APIView):
     "this is were the members pay for stuff read the code weel to get a hag of it"
     authentication_classes = [authentication.TokenAuthentication]
@@ -99,6 +181,20 @@ class InitPaymentTran(APIView):
                 amount_to_be_paid = rule.amount
                 pk= instance.id
                 if instance.has_paid:
+                    raise CustomError({'error':'Please hold for admin to process your info you have paid already'})
+        if forWhat =='man_prospective_subscription_payment':
+            if connection.schema_name == 'man':
+                """
+                    we need to get how much they make so we can know what the will pay
+                    depending on 'current_sales_turnover' in  ManProspectiveMemberFormOne form
+                """
+                instance =get_object_or_404(ManProspectiveMemberProfile,user=request.user)
+                form_one = ManProspectiveMemberFormOne.objects.get(prospective_member=instance)
+                if form_one.current_sales_turnover==0.00:
+                    raise CustomError({'error':'please fill current sales turnover field'})
+                amount_to_be_paid = calMansPayment(form_one)['amountToBePaid']
+                pk= instance.id
+                if instance.has_paid_subcription:
                     raise CustomError({'error':'Please hold for admin to process your info you have paid already'})
 
         if forWhat=="due":
@@ -277,6 +373,16 @@ def useWebhook(request,pk=None):
                 prospective_member= generalProspectiveModels.ProspectiveMemberProfile.objects.get(id=instanceID)
                 prospective_member.has_paid=True
                 prospective_member.amount_paid=amount_to_be_paid
+                prospective_member.save()
+
+        if meta_data['forWhat'] == 'man_prospective_subscription_payment':
+            member_id =meta_data['member_id']
+            instanceID = meta_data['instanceID']
+            amount_to_be_paid= meta_data['amount_to_be_paid']
+            if connection.schema_name == 'man':
+                prospective_member = ManProspectiveMemberProfile.objects.get(id=instanceID)
+                prospective_member.has_paid_subcription=True
+                prospective_member.subcription_amount=float(amount_to_be_paid)
                 prospective_member.save()
 
         return HttpResponse(status.HTTP_200_OK)

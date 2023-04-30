@@ -7,7 +7,8 @@ from rest_framework.authtoken.models import Token
 from Rel8Tenant import models as rel8tenant_related_models
 import requests,json
 from utils.usefulFunc import convert_naira_to_kobo
-from prospectivemember.models.man_prospective_model import ManProspectiveMemberProfile,RegistrationAmountInfo
+from prospectivemember.models.man_prospective_model import (ManProspectiveMemberProfile,RegistrationAmountInfo,
+ManProspectiveMemberFormOne,ManProspectiveMemberFormTwo)
 from utils.custom_response import Success_response
 from rest_framework import status
 
@@ -101,7 +102,7 @@ class CreateManPropectiveMemberSerializer(serializers.ModelSerializer):
 
 
 class PropectiveMemberManageFormOneSerializer(serializers.ModelSerializer):
-
+    prospective_member_payment_info = serializers.SerializerMethodField() 
     def create(self, validated_data):return None
 
     class Meta:
@@ -109,8 +110,13 @@ class PropectiveMemberManageFormOneSerializer(serializers.ModelSerializer):
         fields = '__all__'
         read_only_fields =['prospective_member']
 
-    
+    def get_prospective_member_payment_info(self,instance:man_prospective_model.ManProspectiveMemberFormOne):
+        return {
+            'application_payment':instance.prospective_member.has_paid,
+            'has_paid_subcription':instance.prospective_member.has_paid_subcription
+        }
 class PropectiveMemberManageFormTwoSerializer(serializers.ModelSerializer):
+    prospective_member_payment_info = serializers.SerializerMethodField() 
 
     def create(self, validated_data):return None
     class Meta:
@@ -118,5 +124,57 @@ class PropectiveMemberManageFormTwoSerializer(serializers.ModelSerializer):
         fields = '__all__'
         read_only_fields =['prospective_member']
 
-    
+    def get_prospective_member_payment_info(self,instance:man_prospective_model.ManProspectiveMemberFormTwo):
+        return {
+            'application_payment':instance.prospective_member.has_paid,
+            'has_paid_subcription':instance.prospective_member.has_paid_subcription
+        } 
 
+class ProspectiveManMemberCleaner(serializers.ModelSerializer):
+    form_one = serializers.SerializerMethodField()
+    form_two = serializers.SerializerMethodField()
+
+
+    def get_form_one(self,instance:ManProspectiveMemberProfile):
+        form_one = ManProspectiveMemberFormOne.objects.filter(
+            prospective_member=instance).values(
+            'cac_registration_number','prospective_member','name_of_company','tax_identification_number',
+            'corporate_office_addresse','office_bus_stop','office_city','office_lga','office_state',
+            'postal_addresse','telephone','email_addresse','website','factoru_details','legal_status_of_company',
+            'number_of_female_expatriates','number_of_male_expatriates',
+            'number_of_male_permanent_staff',
+            'number_of_female_permanent_staff',
+            'local_share_capital',
+            'foreign_share_capital',
+            'ownership_structure_equity_local',
+            'ownership_structure_equity_foregin',
+            'total_value_of_land_asset',
+            'total_value_of_building_asset',
+            'total_value_of_other_asset',
+            'installed_capacity',
+            'current_sales_turnover',
+            'projected_sales_turnover',
+            'are_your_product_exported',
+            'company_contact_infomation',
+            'designation',
+            'name_of_md_or_ceo_of_company',
+            'selectdate_of_registration',
+            'upload_signature',
+            'all_roduct_manufactured',
+            'all_raw_materials_used',
+            )
+        return form_one
+    def get_form_two(self,instance):
+        form_two= ManProspectiveMemberFormTwo.objects.filter(prospective_member=instance).values(
+        'corporate_affairs_commision',
+        'letter_of_breakdown_of_payment_and_docs_attached',
+        'first_year_of_buisness_plan',
+        'second_year_of_buisness_plan',
+        'photocopy_of_your_reciept_issued_on_purchase_of_applicant_form',
+        'prospective_member',
+
+        )
+        return []
+    class Meta:
+        model = ManProspectiveMemberProfile
+        fields= '__all__'
