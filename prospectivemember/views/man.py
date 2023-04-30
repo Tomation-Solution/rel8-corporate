@@ -8,7 +8,7 @@ from rest_framework.permissions import  IsAuthenticated,AllowAny
 from rest_framework.decorators import action
 from utils.permissions import IsMemberOrProspectiveMember,IsPropectiveMemberHasPaid
 from utils.permissions import  IsAdminOrSuperAdmin, IsProspectiveMember,IsPropectiveMembersHasPaid_general
-
+from Dueapp.views.payments import calMansPayment
 class CreateManPropectiveMemberViewset(viewsets.ViewSet):
     serializer_class = serializer.CreateManPropectiveMemberSerializer
 
@@ -30,6 +30,11 @@ class PropectiveMemberManageFormOneViewSet(viewsets.ModelViewSet,StatusView):
     queryset = manrelatedPropectiveModels.ManProspectiveMemberFormOne.objects.all()
 
 
+    @action(detail=False,methods=['get'])
+    def get_subscriptio_payment_breakdown(self,request):
+        form_one,created= manrelatedPropectiveModels.ManProspectiveMemberFormOne.objects.get_or_create(prospective_member=request.user.manprospectivememberprofile)
+        
+        return Success_response('Update Successfull',data=calMansPayment(form_one),status_code=status.HTTP_200_OK)
 
     def create(self, request, *args, **kwargs):
         man_prospective_member_form_one,created= manrelatedPropectiveModels.ManProspectiveMemberFormOne.objects.get_or_create(prospective_member=request.user.manprospectivememberprofile)
