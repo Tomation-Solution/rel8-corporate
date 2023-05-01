@@ -1,3 +1,4 @@
+
 from django.urls import reverse
 from utils.custom_exceptions import CustomError
 from utils.custom_response import Success_response
@@ -24,6 +25,8 @@ ManProspectiveMemberFormOne,)
 from mymailing import tasks as mymailing_task
 from prospectivemember.models import general as generalProspectiveModels
 from django.shortcuts import get_object_or_404
+from publication.models import Publication
+
 
 def very_payment(request,reference=None):
     # this would be in the call back to check if the payment is a success
@@ -162,6 +165,14 @@ class InitPaymentTran(APIView):
         PAYSTACK_SECRET = client_tenant.paystack_secret
         instance =None
             # Paystack intialization Url
+        if forWhat == 'paid_publication':
+            instance = get_object_or_404(Publication,id=pk)
+            amount_to_be_paid = instance.amount
+            try:instance.danload.url
+            except:raise CustomError({'error':'please reach out to admin to upload publication file because it not available'})
+            
+
+
         if forWhat == 'prospective_member_registration':
             # it will be only on instance that will ever exist
             if connection.schema_name == 'man':
@@ -384,5 +395,16 @@ def useWebhook(request,pk=None):
                 prospective_member.has_paid_subcription=True
                 prospective_member.subcription_amount=float(amount_to_be_paid)
                 prospective_member.save()
-
+        if meta_data['forWhat'] =='paid_publication':
+            publication= Publication.objects.get(id=meta_data['instanceID'])
+            print({
+            'link':publication.danload.url,
+            'email':user.email,
+            'title':publication.name
+            })            
+            mymailing_task.send_publication_downloadlink.delay(
+                link=publication.danload.url,
+                email=user.email,
+                title=publication.name
+            )
         return HttpResponse(status.HTTP_200_OK)

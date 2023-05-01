@@ -53,7 +53,17 @@ def sendInvitationMail(user,event:event_models.Event,event_proxy_attendies:event
 
     send_mail(mail_subject,'',domain_mail,recipient_list=to_emails,html_message=message,)
 
+def sendPublicationMailApi(link,email,title):
+    mail_subject=f'Man Publication Paid: {title}'
+    data={
+        'email':email,
+        'link':link,
+    }
+    domain_mail = os.environ['domain_mail']
+    domain = connection.schema_name+'.'+os.environ['domain']
+    message = render_to_string('publication.html',context=data)
 
+    send_mail(mail_subject,'',domain_mail,recipient_list=[email],html_message=message,)
 
 def sendMeetingInvitationMail(user,meeting:meeting_models.Meeting,meeting_proxy_attendies:meeting_models.MeetingProxyAttendies):
     mail_subject = f'Invitation for {meeting.name} Meeting'

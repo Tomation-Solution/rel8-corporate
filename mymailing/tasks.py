@@ -1,7 +1,7 @@
 from celery import shared_task
 from django.contrib.auth import get_user_model
 
-from .EmailConfirmation import activateEmail,sendInvitationMail
+from .EmailConfirmation import activateEmail,sendInvitationMail, sendPublicationMailApi
 
 from event.models import Event,EventProxyAttendies
 
@@ -20,3 +20,8 @@ def send_event_invitation_mail(user_id,event_id,event_proxy_attendies_id):
         event=event,
         event_proxy_attendies=event_proxy_attendies
     )
+
+
+@shared_task
+def send_publication_downloadlink(link,email,title):
+     sendPublicationMailApi(link,email,title)

@@ -22,6 +22,9 @@ class Publication(models.Model):
     danload = models.FileField(upload_to='newsFileDanload/%d/',null=True,default=None,
         storage=RawMediaCloudinaryStorage(),
     )
+    paystack = models.TextField(default='.')
+    amount = models.DecimalField(decimal_places=2,max_digits=19,default=0.00)
+    is_paid = models.BooleanField(default=False)
     chapters = models.ForeignKey(auth_realted_models.Chapters,on_delete=models.SET_NULL,null=True,blank=True)
     membership_grade  = models.ForeignKey(user_models.MemberShipGrade,null=True ,default=None,on_delete=models.SET_NULL,blank=True)
 
