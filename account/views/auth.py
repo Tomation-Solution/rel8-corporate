@@ -185,7 +185,6 @@ class Login(ObtainAuthToken):
             'profile_image':profile_image
             })
 
-
 class UploadSecondLevelDataBaseView(CreateAPIView):
     serializer_class = auth_serializers.UploadSecondLevelDataBaseSerializer
     permission_classes =[IsAuthenticated,custom_permission.IsAdminOrSuperAdmin]
@@ -210,6 +209,15 @@ class ManageMemberValidation(viewsets.ViewSet):
             raise CustomError({"error":"You have not uploaded the second level database"})
         # alum_db['useValidation'] this would return list of validations the admin has set already
         return Success_response(msg="Success",data=data['useValidation'],status_code=status.HTTP_200_OK)
+
+    @action(methods=['get'],detail=False)
+    def get_companys_name(self,request,*args,**kwargs):
+        alum_db = auth_models.SecondLevelDatabase.objects.first()
+        data = json.loads(alum_db.data)
+        users = data['usersInfo']
+        all_names = map(lambda x:x['names'],users)
+
+        return Success_response(msg="Database Created Successfully",data=all_names,status_code=status.HTTP_200_OK)
 
 
     def create(self,request):
@@ -356,12 +364,11 @@ class ManageMemberValidation(viewsets.ViewSet):
             if valid_user.get('isValid')==False: raise CustomError({'error':'wrong membership_no'})
 
             db_emails = valid_user.get('user').get('email').split(';')
-            print(db_emails,'ss')
             # this map fuction is to remove the extra space from the value
             if input_email in map(lambda x:x.strip(),db_emails):
-                return Success_response(msg='success',status_code=status.HTTP_200_OK)
+                return Success_response(msg='success',status_code=status.HTTP_200_OK,data=[valid_user])
             else:
-                raise CustomError({"error':'please reach out to support we can't find this email in out database"})
+                raise CustomError({"error":"please reach out to support we can't find this email in our database"})
 
 class AdminManageCommiteeGroupViewSet(viewsets.ModelViewSet):
     """
