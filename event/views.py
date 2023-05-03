@@ -7,6 +7,7 @@ from utils import permissions as custom_permission
 from utils import custom_response
 from rest_framework.decorators import action
 from account.models import user as user_related_models
+from account.models import auth as user_auth_related_models
 from rest_framework.parsers import FormParser
 from utils.custom_parsers import NestedMultipartParser
 from account.serializers import user as user_related_serializer
@@ -46,10 +47,12 @@ class EventViewSet(viewsets.ViewSet):
     def get_queryset(self):
         "we getting the query set but if the person choose is_chapters we get the chapter data"
         is_chapter = self.request.query_params.get('is_chapter',None)
-        user_chapter = self.request.user.chapter
+        # user_chapter = self.request.user.chapter
         data = self.queryset.all()
         if is_chapter:
-            return self.queryset.filter(chapters=user_chapter)
+            user_chapter =  user_auth_related_models.Chapters.objects.filter(user=self.request.user).first()
+            if user_chapter:
+                return self.queryset.filter(chapters=user_chapter)
         return self.queryset.filter(chapters=None)
 
     @action(detail=False,methods=['post'],permission_classes=[permissions.IsAuthenticated,])
