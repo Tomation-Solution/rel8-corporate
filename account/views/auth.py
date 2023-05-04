@@ -2,6 +2,7 @@ import json
 from account.task import regiter_user_to_chat,charge_new_member_dues__fornimn
 from mymailing import tasks as mymailing_task
 from rest_framework import viewsets
+from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from django.contrib.auth import get_user_model
 from rest_framework.generics import CreateAPIView
@@ -12,6 +13,7 @@ from utils.custom_exceptions import CustomError
 from utils.custom_response import Success_response
 from rest_framework import status
 from ..serializers import auth as auth_serializers
+from ..serializers import user as user_serializers
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
 from utils import permissions as custom_permission
@@ -380,6 +382,13 @@ class AdminManageCommiteeGroupViewSet(viewsets.ModelViewSet):
     queryset = user_models.CommiteeGroup.objects.all()
 
     # @permission_classes([IsAuthenticated])
+    @action(['get'],detail=False,permission_classes=[IsAuthenticated,])
+    def view_members_in_commitee (self,request, *args, **kwargs):
+        pk= request.query_params.get('pk','-1')
+        commitee = get_object_or_404( user_models.CommiteeGroup,id=pk)
+        members = commitee.members.all()
+        clean_data =user_serializers.MemberSerializer(instance=members,many=True)
+        return Success_response(msg="Successfull",data=clean_data.data,status_code=status.HTTP_200_OK)
 
     @action(['get','post'],detail=False,permission_classes=[IsAuthenticated])
     def get_commitee(self,request,format=None):
