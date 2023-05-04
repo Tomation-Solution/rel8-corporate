@@ -442,3 +442,24 @@ class UserProfilePicsSerializer(serializers.ModelSerializer):
     class Meta:
         model = user_models.User
         fields = ['photo']
+
+
+class userInfoSerializer(serializers.Serializer):
+    name = serializers.CharField()
+    value = serializers.CharField()
+    id = serializers.IntegerField()
+class AdminUpdateMemberInfoCleaner(serializers.ModelSerializer):
+    class Meta:
+        model = user_models.UserMemberInfo
+        fields= ['name','value','id',]
+
+class AdminUpdateMemberInfoSerializer(serializers.Serializer):
+    user_info = userInfoSerializer(many=True)
+
+    def update(self, instance, validated_data):
+        user_info = validated_data.get('user_info')
+        
+        for eachinfo in user_info:
+            user_models.UserMemberInfo.objects.filter(id=eachinfo.get('id')).update(value=eachinfo.get('value'))
+        return dict()
+    

@@ -46,6 +46,15 @@ class AdminManageGalleryV2Serializer(serializers.ModelSerializer):
                 image=image,
                 gallery=gallery)
         return gallery
+    
+    def update(self, instance, validated_data):
+        upload_images= validated_data.pop('upload_images')
+        for image in upload_images:
+            models.ImagesForGalleryV2.objects.create(
+                image=image,
+                gallery=instance)
+        return instance
+        
 
     class Meta:
         model = models.GalleryV2

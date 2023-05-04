@@ -297,3 +297,26 @@ def get_membershipgrade(request,*args,**kwargs):
 # @api_view(['POST',])
 # @permission_classes([permissions.IsAuthenticated,custom_permissions.IsMember])
     # raise CustomError({"error":"Validation UnSuccessfull"})
+
+
+
+class AdminUpdateMemberInfoViewSet(viewsets.ModelViewSet):
+    permission_classes =[ permissions.IsAuthenticated,custom_permissions.IsAdminOrSuperAdmin]
+    queryset = user_models.UserMemberInfo.objects.all()
+    serializer_class = user.AdminUpdateMemberInfoCleaner
+
+
+
+    def get_queryset(self):
+        member_id = self.request.query_params.get('member_id')
+        queryset = self.queryset.filter(member__id =member_id)
+        return queryset
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
+    
+    def update(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        serailzer_dat = user.AdminUpdateMemberInfoSerializer(instance=queryset,data=request.data)
+        serailzer_dat.is_valid(raise_exception=True)
+        serailzer_dat.save()
+        return custom_response.Success_response(msg='Upadated',data=[],status_code=status.HTTP_200_OK)

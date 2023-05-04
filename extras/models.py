@@ -32,7 +32,7 @@ class GalleryV2(models.Model):
 class ImagesForGalleryV2(models.Model):
     image =  models.ImageField(upload_to="gallery_v2/")
     gallery = models.ForeignKey(GalleryV2,on_delete=models.CASCADE,)
-
+    caption = models.TextField(default=' ')
 
 class FundAProject(models.Model):
     heading =models.CharField(max_length=50)

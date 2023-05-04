@@ -101,17 +101,36 @@ class AdminManageGalleryV2View(GalleryV2View):
         gallery.name=name
         gallery.save()
         return Success_response(msg='Name Updated Successfully',data=[])
+    @action(detail=True,methods=['post'])
+    def add_more_to_gallery(self,request,*args,**kwargs):
+        pk = kwargs.get('pk','-1')
+        instance = get_object_or_404(models.GalleryV2,id=pk)
+        serialzed = serializers.AdminManageGalleryV2Serializer(data=request.data,instance=instance)
+        serialzed.is_valid(raise_exception=True)
+        data = serialzed.save()
+        clean_data = self.serializer_class(data)
+        return Success_response(msg='Created',data=clean_data.data,status_code=status.HTTP_201_CREATED)
 
     @action(detail=False,methods=['post'],)
     def update_gallery_image(self,request,*args,**kwargs):
         image = request.data.get('image',None)
+        caption = request.data.get('caption',None)
         id =  request.data.get('id','-1')
         if image is None:
             raise CustomError({'error':'Please provide an image'})
+            
         galleyImage = get_object_or_404(models.ImagesForGalleryV2,id=id)
         galleyImage.image= image
+        if caption:
+            galleyImage.caption=caption
         galleyImage.save()
         return Success_response('Updated Successfully',data=[])
+    @action(detail=False,methods=['post'],)
+    def delete_single_image(self,request,*args,**kwargs):
+        id =  request.data.get('id','-1')
+        galleyImage = get_object_or_404(models.ImagesForGalleryV2,id=id)
+        galleyImage.delete()
+        return Success_response('Deleted Successfully',data=[])
     
 class TicketingView(viewsets.ModelViewSet):
     queryset = models.Ticketing.objects.all()
