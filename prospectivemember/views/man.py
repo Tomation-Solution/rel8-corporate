@@ -34,7 +34,7 @@ class PropectiveMemberManageFormOneViewSet(viewsets.ModelViewSet,StatusView):
     def get_subscriptio_payment_breakdown(self,request):
         form_one,created= manrelatedPropectiveModels.ManProspectiveMemberFormOne.objects.get_or_create(prospective_member=request.user.manprospectivememberprofile)
         
-        return Success_response('Update Successfull',data=calMansPayment(form_one),status_code=status.HTTP_200_OK)
+        return Success_response('Successfull',data=calMansPayment(form_one),status_code=status.HTTP_200_OK)
 
     def create(self, request, *args, **kwargs):
         man_prospective_member_form_one,created= manrelatedPropectiveModels.ManProspectiveMemberFormOne.objects.get_or_create(prospective_member=request.user.manprospectivememberprofile)

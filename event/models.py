@@ -178,10 +178,21 @@ class Event(models.Model):
 
         else:
             "This will just a One off to activate the Event"
-
+            # schedule,_ =CrontabSchedule.objects.get_or_create(
+            # #means it will work on hour:minutes, 
+            # timezone=local_timezone,
+            # hour=convert12Hour(self.startTime.hour), minute=self.startTime.minute,
+            # day_of_month=','.join( self.schedule.get('day_of_month')),
+            # day_of_week=','.join( self.schedule.get('day_of_week')),)
+            tenant = connection.tenant
+            localized_time = get_localized_time(
+            self.startDate, self.startTime, tenant.timezone
+            )
+            clocked, _ = ClockedSchedule.objects.get_or_create(
+            clocked_time=localized_time
+            )
             PeriodicTask.objects.create(
-                crontab=schedule,
-            #    clocked=clocked,
+               clocked=clocked,
                 name=f"{self.name} {str(self.id)} event on-off",#task name
                 task="event.tasks.activateEvent",#task.
                 args=json.dumps([self.id,]),

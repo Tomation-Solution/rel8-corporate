@@ -58,76 +58,95 @@ def very_payment(request,reference=None):
 
 def calmanLevyFee(amount,is_in_lagos):
     lagos_fee=0.00
+    madeInNgeiraProducts = 10000
+    legalLevy =10000
+    AgmLevy =10000
+    if is_in_lagos:
+        lagos_fee = 20000
     if amount >=200000 or amount <= 2000000:
-        if is_in_lagos:
-            lagos_fee = 60000
-        return {'amountToBePaid':amount+lagos_fee,'lagos_fee':lagos_fee,'is_in_lagos':is_in_lagos}
+        return {'amountToBePaid':amount+lagos_fee+60000+madeInNgeiraProducts+AgmLevy+legalLevy,
+                'landUseCharge':lagos_fee,'is_in_lagos':is_in_lagos,
+            'specialLevy':60000,'madeInNgeiraProducts':madeInNgeiraProducts,'AgmLevy':AgmLevy,
+            'legalLevy':legalLevy
+                
+                }
 
     if amount >=180000 or amount <= 160000:
-        if is_in_lagos:
-            lagos_fee = 30000
-        return {'amountToBePaid':amount+lagos_fee,'lagos_fee':lagos_fee,'is_in_lagos':is_in_lagos}
+        
+        return {
+            'annualSubBasedOnTurnOver':amount+lagos_fee+30000+madeInNgeiraProducts+AgmLevy+legalLevy,
+            'landUseCharge':lagos_fee,'is_in_lagos':is_in_lagos,
+            'specialLevy':30000,'madeInNgeiraProducts':madeInNgeiraProducts,'AgmLevy':AgmLevy,
+            'legalLevy':legalLevy
+            }
 
 def calMansPayment(form_one:ManProspectiveMemberFormOne):
     is_in_lagos = False
     amount = 0.00
+    turnover = None
+    if form_one.current_sales_turnover !='.':
+        turnover = int(form_one.current_sales_turnover)
+    if form_one.projected_sales_turnover !='.':
+        turnover = int(form_one.projected_sales_turnover)
+    if turnover is None:
+        raise CustomError({'error':'Current Sales Turnover or Projected Sales Turn over must be created'})
     if form_one.office_state.lower()=='lagos':
         is_in_lagos =True
-    print({'form_one.current_sales_turnover':form_one.current_sales_turnover,'bool':int(form_one.current_sales_turnover) >=100000000 })
-    if int(form_one.current_sales_turnover) >=100000000 or int(form_one.current_sales_turnover) <= 249900000:
+    
+    if int(turnover) >=100000000 or int(turnover) <= 249900000:
         "line 11 in man docs"
         
         amount = 160000
         return calmanLevyFee(amount,is_in_lagos)
 
-    if int(form_one.current_sales_turnover) >=250000000 or int(form_one.current_sales_turnover) <= 499900000:
+    if int(turnover) >=250000000 or int(turnover) <= 499900000:
         "line 10 in man docs"
         amount = 180000
         return calmanLevyFee(amount,is_in_lagos)
 
 
-    if int(form_one.current_sales_turnover) >=500000000 or int(form_one.current_sales_turnover) <= 749900000:
+    if int(turnover) >=500000000 or int(turnover) <= 749900000:
         "line 9 in man docs"
         amount = 200000
         return calmanLevyFee(amount,is_in_lagos)
 
 
-    if int(form_one.current_sales_turnover) >=750000000 or int(form_one.current_sales_turnover) <= 149000000:
+    if int(turnover) >=750000000 or int(turnover) <= 149000000:
         "line 8 in man docs"
         amount = 220000
         return calmanLevyFee(amount,is_in_lagos)
 
-    if int(form_one.current_sales_turnover) >=1500000000 or int(form_one.current_sales_turnover) <= 3990000000:
+    if int(turnover) >=1500000000 or int(turnover) <= 3990000000:
         "line 7 in man docs"
         amount = 260000
         return calmanLevyFee(amount,is_in_lagos)
 
-    if int(form_one.current_sales_turnover) >=4000000000 or int(form_one.current_sales_turnover) <= 6990000000:
+    if int(turnover) >=4000000000 or int(turnover) <= 6990000000:
         "line 6 in man docs"
         amount= 375000
         return calmanLevyFee(amount,is_in_lagos)
 
-    if int(form_one.current_sales_turnover) >=7000000000 or int(form_one.current_sales_turnover) <= 9990000000:
+    if int(turnover) >=7000000000 or int(turnover) <= 9990000000:
         "line 5 in man docs"
         amount =  500000
         return calmanLevyFee(amount,is_in_lagos)
 
-    if int(form_one.current_sales_turnover) >=10000000000 or int(form_one.current_sales_turnover) <= 14990000000:
+    if int(turnover) >=10000000000 or int(turnover) <= 14990000000:
         "line 4 in man docs"
         amount = 850000
         return calmanLevyFee(amount,is_in_lagos)
     
-    if int(form_one.current_sales_turnover) >=15000000000 or int(form_one.current_sales_turnover) <= 19990000000:
+    if int(turnover) >=15000000000 or int(turnover) <= 19990000000:
         "line 3 in man docs"
         amount=  1400000
         return calmanLevyFee(amount,is_in_lagos)
     
-    if int(form_one.current_sales_turnover) >=20000000000 or int(form_one.current_sales_turnover) <= 39990000000:
+    if int(turnover) >=20000000000 or int(turnover) <= 39990000000:
         "line 2 in man docs"
         amount= 1500000  
         return calmanLevyFee(amount,is_in_lagos)
 
-    if int(form_one.current_sales_turnover) >= 40000000000:
+    if int(turnover) >= 40000000000:
         "line 1 in man docs"
         amount= 2000000
         return calmanLevyFee(amount,is_in_lagos)
