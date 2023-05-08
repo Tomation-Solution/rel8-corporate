@@ -419,7 +419,10 @@ class IsOwningSerializerCleaner(serializers.ModelSerializer):
     email  = serializers.SerializerMethodField()
     photo = serializers.SerializerMethodField()
 
+    full_name =serializers.SerializerMethodField()
 
+    def get_full_name(self,instance):
+        return instance.full_name
     def get_photo(self,member):
         user = member.user
         if user.photo:

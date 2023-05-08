@@ -5,11 +5,11 @@ from . import models,filter as custom_filter
 from utils import custom_response
 from utils.custom_exceptions import CustomError
 from . import serializer
-from rest_framework.decorators import action
+from rest_framework.decorators import action,permission_classes as decorator_permission_classes
 from django.shortcuts import get_object_or_404
 from utils import custom_response,custom_parsers
 from rest_framework.parsers import  FormParser
-
+from account.models import auth as user_auth_related_models
 
 class MeetingMemberViewSet(viewsets.ViewSet):
     permission_classes = [ permissions.IsAuthenticated,custom_permission.IsMember,custom_permission.Isfinancial]
@@ -77,9 +77,11 @@ class AdminManagesMeetingViewset(viewsets.ModelViewSet):
 
     def get_queryset(self):
         'if it super user we dont filter by chapter if it is then we filter by chapter'
-        user_chapter = self.request.user.chapter
+        # user_chapter = self.request.user.chapter
         if self.request.user.user_type == 'admin':
-            return self.queryset.filter(chapters=user_chapter)
+            user_chapter =  user_auth_related_models.Chapters.objects.filter(user=self.request.user).first()
+            if user_chapter:
+                return self.queryset.filter(chapters=user_chapter)
         return self.queryset.filter(chapters=None)
 
     def list(self,request,format=None):
@@ -91,3 +93,13 @@ class AdminManagesMeetingViewset(viewsets.ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         return super().create(request, *args, **kwargs)
+    
+    @action(methods=['post'],detail=False)
+    def get_register_members(self,request,*args,**kwargs):
+        meeting_id = request.data.get('meeting_id',None)
+
+        meeting = get_object_or_404(models.Meeting,id=meeting_id)
+
+
+        serilied = serializer.RegisteredMeetingMembersSerializer(meeting,many=False)
+        return custom_response.Success_response(msg='Success',data=serilied.data,status_code=status.HTTP_200_OK)

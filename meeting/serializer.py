@@ -95,10 +95,11 @@ class RegisteredMeetingMembersSerializer(serializers.ModelSerializer):
     proxy_participants = serializers.SerializerMethodField()
     memebers = serializers.SerializerMethodField()
     def get_memebers(self,meeting):
-        return models.MeetingAttendies.objects.filter(
-            meeting=meeting
-        ).values('id','members__user__email')
-
+        # 
+        def clean(d):return d.members
+        members = map(clean,models.MeetingAttendies.objects.filter(meeting=meeting))
+        serializer = MemberSerializer(instance=members,many=True)
+        return serializer.data
     def get_proxy_participants(self,instance:models.Meeting):
         try:
             meeting_proxy_attendies = models.MeetingProxyAttendies.objects.get(meeting=instance)

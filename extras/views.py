@@ -116,11 +116,12 @@ class AdminManageGalleryV2View(GalleryV2View):
         image = request.data.get('image',None)
         caption = request.data.get('caption',None)
         id =  request.data.get('id','-1')
-        if image is None:
-            raise CustomError({'error':'Please provide an image'})
+        # if image is None:
+        #     raise CustomError({'error':'Please provide an image'})
             
         galleyImage = get_object_or_404(models.ImagesForGalleryV2,id=id)
-        galleyImage.image= image
+        if image is not None:
+            galleyImage.image= image
         if caption:
             galleyImage.caption=caption
         galleyImage.save()
