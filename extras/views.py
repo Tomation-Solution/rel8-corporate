@@ -144,6 +144,21 @@ class AdminManagesProjectViewset(viewsets.ModelViewSet):
     queryset = models.FundAProject.objects.all()
     permission_classes = [permissions.IsAuthenticated,custom_permission.IsAdminOrSuperAdmin]
     parser_classes = (custom_parsers.NestedMultipartParser,FormParser,)
+    @action(detail=False,methods=['get'],)
+    def get_intrested_members_for_supportincash(self,reqeust,*args,**kwargs):
+        pk = reqeust.query_params.get('pk','-1')
+        fundProject = models.FundAProject.objects.get(id =pk)
+        intrestedMembers = models.SupportProjectInCash.objects.filter(project=fundProject)
+        serlizer_class =  serializers.SupportProjectInCashCleaner(instance=intrestedMembers,many=True)
+        return Success_response('Success',data=serlizer_class.data,status_code=status.HTTP_200_OK)
+    
+    @action(detail=False,methods=['get'],)
+    def get_intrested_members_for_supportinkind(self,reqeust,*args,**kwargs):
+        pk = reqeust.query_params.get('pk','-1')
+        fundProject = models.FundAProject.objects.get(id =pk)
+        intrestedMembers = models.SupportProjectInKind.objects.filter(project=fundProject)
+        serlizer_class =  serializers.SupportProjectInKindCleaner(instance=intrestedMembers,many=True)
+        return Success_response('Success',data=serlizer_class.data,status_code=status.HTTP_200_OK)
 
 
 class MemeberProjectViewset(viewsets.ViewSet):

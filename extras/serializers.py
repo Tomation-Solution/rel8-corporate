@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from . import models
-
+from account.serializers import user as user_serializers
 
 
 
@@ -95,3 +95,25 @@ class MemeberCustomerSupporSerializer(serializers.ModelSerializer):
         model = models.CustomerSupport
         fields = ['heading','body','status','id']
         read_only_fields=['member','status','id',]
+
+
+class SupportProjectInKindCleaner(serializers.ModelSerializer):
+    member = serializers.SerializerMethodField()
+
+    def get_member(self,instance):
+        serializer = user_serializers.MemberSerializer(instance=instance.member,)
+        return serializer.data
+    class Meta:
+        model =models.SupportProjectInKind
+        fields = ['id','member','heading','about','project']
+        # MemberSerializer
+
+class SupportProjectInCashCleaner(serializers.ModelSerializer):
+    member = serializers.SerializerMethodField()
+
+    def get_member(self,instance):
+        serializer = user_serializers.MemberSerializer(instance=instance.member)
+        return serializer.data
+    class Meta:
+        model =models.SupportProjectInCash
+        fields = ['id','member','amount','is_paid','project']
