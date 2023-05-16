@@ -3,6 +3,7 @@ from prospectivemember.views import man as man_views
 from prospectivemember.views import general as general_view
 router = DefaultRouter()
 # below are endpoint for only MAN
+router.register('adminmanage_remark',man_views.AdminManageRemark)
 router.register('creation_of_prospective_member',man_views.CreateManPropectiveMemberViewset,basename='creation_of_prospective_member')
 router.register('propective_member_manage_form_one',man_views.PropectiveMemberManageFormOneViewSet,basename='propective_member_manage_form_one')
 router.register('propective_member_manage_form_two',man_views.PropectiveMemberManageFormTwo,basename='propective_member_manage_form_one')

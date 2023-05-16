@@ -106,3 +106,9 @@ class ManProspectiveMemberFormTwo(models.Model):
 
     def __str__(self):
         return f'form two {self.prospective_member.name_of_company}'
+
+
+
+class Remark(models.Model):
+    member_profile = models.ForeignKey(ManProspectiveMemberProfile,on_delete=models.CASCADE)
+    content = models.TextField(default=' ')

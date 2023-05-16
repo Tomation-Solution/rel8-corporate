@@ -5,10 +5,12 @@ from utils.custom_response import Success_response
 from rest_framework import status
 from utils.custom_exceptions import  CustomError 
 from rest_framework.permissions import  IsAuthenticated,AllowAny
-from rest_framework.decorators import action
+from rest_framework.decorators import action,permission_classes as deco_permission_classes
 from utils.permissions import IsMemberOrProspectiveMember,IsPropectiveMemberHasPaid
 from utils.permissions import  IsAdminOrSuperAdmin, IsProspectiveMember,IsPropectiveMembersHasPaid_general
 from Dueapp.views.payments import calMansPayment
+from django.shortcuts import get_object_or_404
+from  rest_framework.response import Response
 class CreateManPropectiveMemberViewset(viewsets.ViewSet):
     serializer_class = serializer.CreateManPropectiveMemberSerializer
 
@@ -84,3 +86,19 @@ class AdminManageManProspectiveMemberViewSet(viewsets.ViewSet):
         clean_data = serializer.ProspectiveManMemberCleaner(instance=all_propective_member_profiles,many=True)
         
         return Success_response('success',data=clean_data.data,)
+
+class AdminManageRemark(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated,
+                        #   IsAdminOrSuperAdmin
+                          ]
+    queryset = manrelatedPropectiveModels.Remark.objects.all()
+
+    @action(detail=False,methods=['get'])
+    @deco_permission_classes([IsAuthenticated])
+    def get_my_remark(self,request,*args,**kwargs):
+        profile = manrelatedPropectiveModels.ManProspectiveMemberProfile.objects.get(user=request.user)
+        remark = manrelatedPropectiveModels.Remark.objects.filter(member_profile=profile).values(
+        'content','id','member_profile'
+        )
+
+        return Response(data=remark,status=status.HTTP_200_OK)

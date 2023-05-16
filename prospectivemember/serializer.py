@@ -8,7 +8,7 @@ from Rel8Tenant import models as rel8tenant_related_models
 import requests,json
 from utils.usefulFunc import convert_naira_to_kobo
 from prospectivemember.models.man_prospective_model import (ManProspectiveMemberProfile,RegistrationAmountInfo,
-ManProspectiveMemberFormOne,ManProspectiveMemberFormTwo)
+ManProspectiveMemberFormOne,ManProspectiveMemberFormTwo,Remark)
 from utils.custom_response import Success_response
 from rest_framework import status
 
@@ -178,3 +178,12 @@ class ProspectiveManMemberCleaner(serializers.ModelSerializer):
     class Meta:
         model = ManProspectiveMemberProfile
         fields= '__all__'
+
+    
+
+class AdminRemarkSerializer(serializers.ModelSerializer):
+
+
+    class Meta:
+        model = Remark
+        field = '__all__'

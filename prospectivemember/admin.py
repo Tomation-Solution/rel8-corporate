@@ -1,6 +1,6 @@
 from django.contrib import admin
 from prospectivemember.models.man_prospective_model import( RegistrationAmountInfo,ManProspectiveMemberProfile,
-ManProspectiveMemberFormOne,ManProspectiveMemberFormTwo )
+ManProspectiveMemberFormOne,ManProspectiveMemberFormTwo ,Remark)
 from prospectivemember.models import general
 # Register your models here.
 
@@ -10,7 +10,7 @@ admin.site.register(ManProspectiveMemberFormTwo)
 admin.site.register(ManProspectiveMemberFormOne)
 admin.site.register(RegistrationAmountInfo)
 
-
+admin.site.register(Remark)
 
 admin.site.register(general.ProspectiveMemberProfile)
 admin.site.register(general.ProspectiveMemberFormOne)
