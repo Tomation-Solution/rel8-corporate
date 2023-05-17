@@ -100,15 +100,19 @@ class AdminManageManProspectiveMemberViewSet(viewsets.ViewSet):
     @action(detail=False,methods=['post'])
     def update_prospective_status(self,request,*args,**kwargs):
         id = request.data.get('id')
-        status = request.data.get('status','approval_in_progress')
+        status = request.data.get('status',None)
         remark = request.data.get('remark',None)
 
         profile = manrelatedPropectiveModels.ManProspectiveMemberProfile.objects.get(id=id)
-        profile.application_status=status
+        if status is not None:
+            profile.application_status=status
         if remark is not None:
             profile.admin=remark
         profile.save()
-        return Success_response(f'profile status has been changed to "{status}"')
+        message='profile status has been changed to "{status}"'
+        if status is None:
+            message='updated'
+        return Success_response(message)
         
 
 class AdminManageRemark(viewsets.ModelViewSet):
