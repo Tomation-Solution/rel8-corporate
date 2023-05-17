@@ -28,6 +28,7 @@ class ManProspectiveMemberProfile(models.Model):
         approval_in_progress = 'approval_in_progress'
         approval_in_principle_granted = 'approval_in_principle_granted'
         final_approval = 'final_approval'
+        decline = 'decline'
 
     application_status = models.CharField(max_length=100,choices=ManProspectiveMemberApplicationStatusChoice.choices,default=ManProspectiveMemberApplicationStatusChoice.approval_in_progress)
 
