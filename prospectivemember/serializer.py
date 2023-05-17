@@ -163,6 +163,7 @@ class ProspectiveManMemberCleaner(serializers.ModelSerializer):
             'all_roduct_manufactured',
             'all_raw_materials_used',
             )
+        print({'form_one':form_one})
         return form_one
     def get_form_two(self,instance):
         form_two= ManProspectiveMemberFormTwo.objects.filter(prospective_member=instance).values(
@@ -174,7 +175,7 @@ class ProspectiveManMemberCleaner(serializers.ModelSerializer):
         'prospective_member',
 
         )
-        return []
+        return form_two
     class Meta:
         model = ManProspectiveMemberProfile
         fields= '__all__'

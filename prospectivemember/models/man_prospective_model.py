@@ -19,7 +19,7 @@ class ManProspectiveMemberProfile(models.Model):
 
     subcription_amount = models.DecimalField(decimal_places=2,max_digits=10,default=0.00)
     subcription_paystack = models.CharField(max_length=300,default='')
-
+    admin = models.TextField(default='no remark from admin')
     has_paid_subcription = models.BooleanField(default=False)
     class ManProspectiveMemberApplicationStatusChoice(models.TextChoices):
         approval_in_progress = 'approval_in_progress'
@@ -71,6 +71,7 @@ class ManProspectiveMemberFormOne(models.Model):
     projected_sales_turnover = models.TextField(default=".")
     are_your_product_exported = models.TextField(default=".")
     company_contact_infomation = models.TextField(default=".")
+    # capacity_type = models.CharField(max_length=20)
     designation = models.TextField(default=".")
     name_of_md_or_ceo_of_company = models.TextField(default=".")
     selectdate_of_registration = models.DateField(null=True,default=None)

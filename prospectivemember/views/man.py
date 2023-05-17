@@ -76,16 +76,36 @@ class PropectiveMemberManageFormTwo(viewsets.ModelViewSet,StatusView):
 
 class AdminManageManProspectiveMemberViewSet(viewsets.ViewSet):
     # queryset = man_prospective_model.p
-    permission_classes = [IsAuthenticated,IsAdminOrSuperAdmin]
+    permission_classes = [
+        # IsAuthenticated,IsAdminOrSuperAdmin
+        # remove authentication for now for easy of user
+        ]
 
 
     @action(detail=False,methods=['get'])
     def get_submissions(self,request,*args,**kwargs):
-
-        all_propective_member_profiles = manrelatedPropectiveModels.ManProspectiveMemberProfile.objects.filter(has_paid_subcription=True)
-        clean_data = serializer.ProspectiveManMemberCleaner(instance=all_propective_member_profiles,many=True)
+        details = request.query_params.get('id',None)
+        if details is None:
+            all_propective_member_profiles = manrelatedPropectiveModels.ManProspectiveMemberProfile.objects.filter(has_paid_subcription=True)
+            clean_data = serializer.ProspectiveManMemberCleaner(instance=all_propective_member_profiles,many=True)
+                
+            return Success_response ('success',data=clean_data.data,)
         
-        return Success_response('success',data=clean_data.data,)
+        all_propective_member_profiles =get_object_or_404(manrelatedPropectiveModels.ManProspectiveMemberProfile,id=details)
+
+        clean_data = serializer.ProspectiveManMemberCleaner(instance=all_propective_member_profiles,many=False)
+        
+        return Success_response('success',data=clean_data.data)
+    
+    @action(detail=False,methods=['post'])
+    def update_prospective_status(self,request,*args,**kwargs):
+        id = request.data.get('id')
+        status = request.data.get('status','approval_in_progress')
+        profile = manrelatedPropectiveModels.ManProspectiveMemberProfile.objects.get(id=id)
+        profile.application_status=status
+        profile.save()
+        return Success_response(f'profile status has been changed to "{status}"')
+        
 
 class AdminManageRemark(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated,
