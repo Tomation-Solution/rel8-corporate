@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth import get_user_model
+from datetime import datetime
 
 
 class RegistrationAmountInfo(models.Model):
@@ -21,6 +22,8 @@ class ManProspectiveMemberProfile(models.Model):
     subcription_paystack = models.CharField(max_length=300,default='')
     admin = models.TextField(default='no remark from admin')
     has_paid_subcription = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True,null=True,blank=True)
+    #  datetime.now()
     class ManProspectiveMemberApplicationStatusChoice(models.TextChoices):
         approval_in_progress = 'approval_in_progress'
         approval_in_principle_granted = 'approval_in_principle_granted'
