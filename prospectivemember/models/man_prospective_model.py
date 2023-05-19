@@ -75,7 +75,11 @@ class ManProspectiveMemberFormOne(models.Model):
     projected_sales_turnover = models.TextField(default=".")
     are_your_product_exported = models.TextField(default=".")
     company_contact_infomation = models.TextField(default=".")
-    # capacity_type = models.CharField(max_length=20)
+    class CapacityTypeChoice(models.TextChoices):
+        kg='kg'
+        ton='ton'
+
+    capacity_type = models.CharField(max_length=20,choices=CapacityTypeChoice.choices,default=CapacityTypeChoice.kg)
     designation = models.TextField(default=".")
     name_of_md_or_ceo_of_company = models.TextField(default=".")
     selectdate_of_registration = models.DateField(null=True,default=None)
