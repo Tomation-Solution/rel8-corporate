@@ -11,6 +11,7 @@ from utils.permissions import  IsAdminOrSuperAdmin, IsProspectiveMember,IsPropec
 from Dueapp.views.payments import calMansPayment
 from django.shortcuts import get_object_or_404
 from  rest_framework.response import Response
+from mymailing.tasks import sendRemarkNotification
 class CreateManPropectiveMemberViewset(viewsets.ViewSet):
     serializer_class = serializer.CreateManPropectiveMemberSerializer
 
@@ -108,6 +109,9 @@ class AdminManageManProspectiveMemberViewSet(viewsets.ViewSet):
         if status is not None:
             profile.application_status=status
         if remark is not None:
+            sendRemarkNotification.delay(
+                to_email=profile.user.email,remark=remark
+            )
             profile.admin=remark
         profile.save()
         message=f'profile status has been changed to "{status}"'

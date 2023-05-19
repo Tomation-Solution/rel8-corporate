@@ -4,12 +4,14 @@ from django.conf import settings
 from django.utils.encoding import force_bytes,force_str
 from django.core.mail import EmailMessage
 from .tokens import account_activation_token
-from django.core.mail import send_mail
+# from django.core.mail import send_mail
 import os,json
 from event import models as event_models
 from meeting import models as meeting_models
 from account.models import user as models_user
 from django.db import connection
+from mymailing.views import send_mail
+
 
 def activateEmail(user,to_email):
     mail_subject = 'Activate your user account'
@@ -27,13 +29,16 @@ def activateEmail(user,to_email):
     }
     message = render_to_string('mail_body.html',context=data)
     
-    send_mail(mail_subject,'',domain_mail,recipient_list=[to_email],html_message=message,)
+    send_mail(
+        subject=mail_subject,
+        sender={'email':domain_mail,'name':'MAN'},
+        to=[{"email":to_email,"name":"rel8"}],html_content=message,)
 
 def sendInvitationMail(user,event:event_models.Event,event_proxy_attendies:event_models.EventProxyAttendies):
     mail_subject = f'Invitation for {event.name} Event'
     person_that_invite_you_email= event_proxy_attendies.event_due_user.user.email
     person_that_invite_you_full_name = models_user.Memeber.objects.get(user=event_proxy_attendies.event_due_user.user.id)
-    def func(item):return item.get('email')
+    def func(item):return {'email':item.get('email'),'name':'MAN'}
     to_emails =map(func,event_proxy_attendies.participants)
 
 
@@ -52,6 +57,11 @@ def sendInvitationMail(user,event:event_models.Event,event_proxy_attendies:event
     message = render_to_string('proxy_event_mail.html',context=data)
 
     send_mail(mail_subject,'',domain_mail,recipient_list=to_emails,html_message=message,)
+
+    send_mail(
+        subject=mail_subject,
+        sender={'email':domain_mail,'name':'MAN'},
+        to=to_emails,html_content=message,)
 
 def sendPublicationMailApi(link,email,title):
     mail_subject=f'Man Publication Paid: {title}'
@@ -89,3 +99,4 @@ def sendMeetingInvitationMail(user,meeting:meeting_models.Meeting,meeting_proxy_
 
 
     send_mail(mail_subject,'',domain_mail,recipient_list=to_emails,html_message=message,)
+
