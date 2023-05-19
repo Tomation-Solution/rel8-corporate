@@ -77,7 +77,8 @@ def calmanLevyFee(amount,is_in_lagos):
             'annualSubBasedOnTurnOver':amount+lagos_fee+30000+madeInNgeiraProducts+AgmLevy+legalLevy,
             'landUseCharge':lagos_fee,'is_in_lagos':is_in_lagos,
             'specialLevy':30000,'madeInNgeiraProducts':madeInNgeiraProducts,'AgmLevy':AgmLevy,
-            'legalLevy':legalLevy
+            'legalLevy':legalLevy,
+            'annualSub':amount
             }
 
 def calMansPayment(form_one:ManProspectiveMemberFormOne):
