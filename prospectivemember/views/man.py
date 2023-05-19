@@ -110,7 +110,7 @@ class AdminManageManProspectiveMemberViewSet(viewsets.ViewSet):
         if remark is not None:
             profile.admin=remark
         profile.save()
-        message='profile status has been changed to "{status}"'
+        message=f'profile status has been changed to "{status}"'
         if status is None:
             message='updated'
         return Success_response(message)

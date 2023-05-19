@@ -136,46 +136,52 @@ class ProspectiveManMemberCleaner(serializers.ModelSerializer):
 
 
     def get_form_one(self,instance:ManProspectiveMemberProfile):
-        form_one = ManProspectiveMemberFormOne.objects.filter(
-            prospective_member=instance).values(
-            'cac_registration_number','prospective_member','name_of_company','tax_identification_number',
-            'corporate_office_addresse','office_bus_stop','office_city','office_lga','office_state',
-            'postal_addresse','telephone','email_addresse','website','factoru_details','legal_status_of_company',
-            'number_of_female_expatriates','number_of_male_expatriates',
-            'number_of_male_permanent_staff',
-            'number_of_female_permanent_staff',
-            'local_share_capital',
-            'foreign_share_capital',
-            'ownership_structure_equity_local',
-            'ownership_structure_equity_foregin',
-            'total_value_of_land_asset',
-            'total_value_of_building_asset',
-            'total_value_of_other_asset',
-            'installed_capacity',
-            'current_sales_turnover',
-            'projected_sales_turnover',
-            'are_your_product_exported',
-            'company_contact_infomation',
-            'designation',
-            'name_of_md_or_ceo_of_company',
-            'selectdate_of_registration',
-            'upload_signature',
-            'all_roduct_manufactured',
-            'all_raw_materials_used',
-            )
+        form_one =  ManProspectiveMemberFormOne.objects.filter(
+             prospective_member=instance)
+        clean= PropectiveMemberManageFormOneSerializer(instance=form_one,many=True)
+        # form_one = ManProspectiveMemberFormOne.objects.filter(
+        #     prospective_member=instance).values(
+        #     'cac_registration_number','prospective_member','name_of_company','tax_identification_number',
+        #     'corporate_office_addresse','office_bus_stop','office_city','office_lga','office_state',
+        #     'postal_addresse','telephone','email_addresse','website','factoru_details','legal_status_of_company',
+        #     'number_of_female_expatriates','number_of_male_expatriates',
+        #     'number_of_male_permanent_staff',
+        #     'number_of_female_permanent_staff',
+        #     'local_share_capital',
+        #     'foreign_share_capital',
+        #     'ownership_structure_equity_local',
+        #     'ownership_structure_equity_foregin',
+        #     'total_value_of_land_asset',
+        #     'total_value_of_building_asset',
+        #     'total_value_of_other_asset',
+        #     'installed_capacity',
+        #     'current_sales_turnover',
+        #     'projected_sales_turnover',
+        #     'are_your_product_exported',
+        #     'company_contact_infomation',
+        #     'designation',
+        #     'name_of_md_or_ceo_of_company',
+        #     'selectdate_of_registration',
+        #     'upload_signature',
+        #     'all_roduct_manufactured',
+        #     'all_raw_materials_used',
+        #     )
         print({'form_one':form_one})
-        return form_one
+        # return form_one
+        return clean.data
     def get_form_two(self,instance):
-        form_two= ManProspectiveMemberFormTwo.objects.filter(prospective_member=instance).values(
-        'corporate_affairs_commision',
-        'letter_of_breakdown_of_payment_and_docs_attached',
-        'first_year_of_buisness_plan',
-        'second_year_of_buisness_plan',
-        'photocopy_of_your_reciept_issued_on_purchase_of_applicant_form',
-        'prospective_member',
+        # form_two= ManProspectiveMemberFormTwo.objects.filter(prospective_member=instance).values(
+        # 'corporate_affairs_commision',
+        # 'letter_of_breakdown_of_payment_and_docs_attached',
+        # 'first_year_of_buisness_plan',
+        # 'second_year_of_buisness_plan',
+        # 'photocopy_of_your_reciept_issued_on_purchase_of_applicant_form',
+        # 'prospective_member',
 
-        )
-        return form_two
+        # )
+        form_two= ManProspectiveMemberFormTwo.objects.filter(prospective_member=instance)
+        clean = PropectiveMemberManageFormTwoSerializer(instance=form_two,many=True)
+        return clean.data
     class Meta:
         model = ManProspectiveMemberProfile
         fields= '__all__'
