@@ -67,7 +67,9 @@ def calmanLevyFee(amount,is_in_lagos):
         return {'amountToBePaid':amount+lagos_fee+60000+madeInNgeiraProducts+AgmLevy+legalLevy,
                 'landUseCharge':lagos_fee,'is_in_lagos':is_in_lagos,
             'specialLevy':60000,'madeInNgeiraProducts':madeInNgeiraProducts,'AgmLevy':AgmLevy,
-            'legalLevy':legalLevy
+            'legalLevy':legalLevy,
+            'annualSub':amount
+
                 
                 }
 
