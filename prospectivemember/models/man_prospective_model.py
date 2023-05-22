@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth import get_user_model
 from datetime import datetime
+from cloudinary_storage.storage import RawMediaCloudinaryStorage
 
 
 class RegistrationAmountInfo(models.Model):
@@ -106,11 +107,16 @@ class ManProspectiveMemberFormOne(models.Model):
 
 
 class ManProspectiveMemberFormTwo(models.Model):
-    corporate_affairs_commision = models.FileField(upload_to='corporate_affairs_commision/')
-    letter_of_breakdown_of_payment_and_docs_attached = models.FileField(upload_to='letter_of_breakdown_of_payment_and_docs_attached/')
-    first_year_of_buisness_plan = models.FileField(upload_to='first_year_of_buisness_plan/')
-    second_year_of_buisness_plan = models.FileField(upload_to='second_year_of_buisness_plan/')
-    photocopy_of_your_reciept_issued_on_purchase_of_applicant_form = models.FileField(upload_to='photocopy_of_your_reciept_issued_on_purchase_of_applicant_form/')
+    corporate_affairs_commision = models.FileField(upload_to='corporate_affairs_commision/',null=True, default=None,
+                            storage=RawMediaCloudinaryStorage())
+    letter_of_breakdown_of_payment_and_docs_attached = models.FileField(upload_to='letter_of_breakdown_of_payment_and_docs_attached/',null=True, default=None,
+                            storage=RawMediaCloudinaryStorage())
+    first_year_of_buisness_plan = models.FileField(upload_to='first_year_of_buisness_plan/',null=True, default=None,
+                            storage=RawMediaCloudinaryStorage())
+    second_year_of_buisness_plan = models.FileField(upload_to='second_year_of_buisness_plan/',null=True, default=None,
+                            storage=RawMediaCloudinaryStorage())
+    photocopy_of_your_reciept_issued_on_purchase_of_applicant_form = models.FileField(upload_to='photocopy_of_your_reciept_issued_on_purchase_of_applicant_form/',null=True, default=None,
+                            storage=RawMediaCloudinaryStorage())
     prospective_member = models.OneToOneField(ManProspectiveMemberProfile,on_delete=models.CASCADE)
 
     def __str__(self):
