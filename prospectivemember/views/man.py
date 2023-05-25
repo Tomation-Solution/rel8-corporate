@@ -73,7 +73,9 @@ class PropectiveMemberManageFormTwo(viewsets.ModelViewSet,StatusView):
         query_set = self.queryset.filter(prospective_member=self.request.user.manprospectivememberprofile)
         return query_set
 
-
+    # def perform_update(self, serializer):
+    #     serializer.save
+    #     return super().perform_update(serializer)
 
 class AdminManageManProspectiveMemberViewSet(viewsets.ViewSet):
     # queryset = man_prospective_model.p
