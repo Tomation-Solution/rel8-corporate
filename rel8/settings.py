@@ -321,7 +321,8 @@ CORS_ALLOWED_ORIGINS = [
 'http://anni.up.railway.app',
 'https://anni.up.railway.app',
 'https://anni.up.railway.app',
-'https://man-new-test-site.netlify.app'
+'https://man-new-test-site.netlify.app',
+'https://rel8admin-production-3c7d.up.railway.app'
 ]
 if os.environ.get('databaseName',None):
     CORS_ALLOWED_ORIGINS.append('http://localhost:3000')
