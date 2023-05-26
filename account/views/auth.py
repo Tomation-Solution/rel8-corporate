@@ -336,16 +336,15 @@ class ManageMemberValidation(viewsets.ViewSet):
         # if connection.schema_name == 'nimn':
         "this is not for nimn specific any more view the function for more info"
         charge_new_member_dues__fornimn.delay(user.id)
-
         if connection.schema_name == 'man':
-            for key in request.data.keys():
+            for key in userDBData.keys():
                 if key == 'SECTOR':
-                    exco_name = request.data[key]
+                    exco_name = userDBData[key]
                     acct_task.group_MAN_subSector_and_sector.delay(
                         exco_name,member.id,type='sector'
                     )
                 if key == 'SUB-SECTOR':
-                    exco_name = request.data[key]
+                    exco_name = userDBData[key]
                     acct_task.group_MAN_subSector_and_sector.delay(
                         exco_name,member.id,type='sub-sector'
                     )
