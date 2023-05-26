@@ -338,7 +338,7 @@ class ManageMemberValidation(viewsets.ViewSet):
         charge_new_member_dues__fornimn.delay(user.id)
 
         if connection.schema_name == 'man':
-            for key in userDBData.keys():
+            for key in request.data.keys():
                 if key == 'SECTOR':
                     exco_name = request.data[key]
                     acct_task.group_MAN_subSector_and_sector.delay(
