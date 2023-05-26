@@ -266,6 +266,7 @@ class InitPaymentTran(APIView):
             "here we check it the"
             try:
                 amount = int(amount)
+                amount_to_be_paid=amount
             except ValueError:
                 raise CustomError({'error':'amount must be number '})
             fundAProject = extras_models.FundAProject.objects.get(id=pk)
@@ -274,9 +275,10 @@ class InitPaymentTran(APIView):
                 project=fundAProject,
                 
             )
-            fundAProject.amount = amount
+            instance.amount = amount
             instance.save()
-            amount_to_be_paid=instance.amount
+            amount_to_be_paid=amount
+
         # if 
         if(instance==None):raise CustomError({"error":"Something went wrong"})
         if request.user.user_type== 'members':
@@ -321,7 +323,6 @@ class InitPaymentTran(APIView):
             instance.save()
 
             return Success_response(msg='Success',data=data)
-
         raise CustomError(message='Some Error Occured Please Try Again',status_code=status.HTTP_503_SERVICE_UNAVAILABLE)
 
 @csrf_exempt
@@ -419,11 +420,7 @@ def useWebhook(request,pk=None):
                 prospective_member.save()
         if meta_data['forWhat'] =='paid_publication':
             publication= Publication.objects.get(id=meta_data['instanceID'])
-            print({
-            'link':publication.danload.url,
-            'email':user.email,
-            'title':publication.name
-            })            
+                     
             mymailing_task.send_publication_downloadlink.delay(
                 link=publication.danload.url,
                 email=user.email,
