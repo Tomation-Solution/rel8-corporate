@@ -147,6 +147,9 @@ class Memeber(models.Model):
     dob   = models.DateField(blank=True,null=True,default=None)
     citizenship    = models.CharField(default='',max_length=24)
 
+
+    def __str__(self) -> str:
+        return  self.full_name or self.user.email
 # filter(
 # )
     @property

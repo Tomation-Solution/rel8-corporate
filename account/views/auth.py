@@ -5,7 +5,7 @@ from rest_framework import viewsets
 from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from django.contrib.auth import get_user_model
-from rest_framework.generics import CreateAPIView
+from rest_framework.generics import CreateAPIView,UpdateAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from django.db import connection
@@ -187,7 +187,7 @@ class Login(ObtainAuthToken):
             'profile_image':profile_image
             })
 
-class UploadSecondLevelDataBaseView(CreateAPIView):
+class UploadSecondLevelDataBaseView(CreateAPIView,UpdateAPIView):
     serializer_class = auth_serializers.UploadSecondLevelDataBaseSerializer
     permission_classes =[IsAuthenticated,custom_permission.IsAdminOrSuperAdmin]
 
@@ -199,10 +199,18 @@ class UploadSecondLevelDataBaseView(CreateAPIView):
         print(serializedData.save())
         return Success_response(msg="Database Created Successfully",data=[],status_code=status.HTTP_200_OK)
 
-
+    def patch(self,request,*args):
+        serializer = auth_serializers.UploadAndCreateMembersSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Success_response(msg="Member Created Successfully",data=[],status_code=status.HTTP_201_CREATED)
 
 class ManageMemberValidation(viewsets.ViewSet):
 
+
+    # @action(detail=False,methods=['post'])
+    # def manual_member_creation(self,request,*args,**kwargs):
+    #     pass
     def list(self,request):
         "this would return list of validation Field"
         alum_db = auth_models.SecondLevelDatabase.objects.first()

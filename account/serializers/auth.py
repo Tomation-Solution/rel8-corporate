@@ -7,6 +7,11 @@ from .. models import user as user_models
 from account.serializers import user as user_related_serializer
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 import json
+from utils.custom_exceptions import CustomError
+from django.db import connection
+from account.task import regiter_user_to_chat,charge_new_member_dues__fornimn
+from account import task as acct_task
+
 # this gets tge current user model which has been set in the setting useing "AUTH_USER_MODEL"
 User = get_user_model()
 
@@ -106,6 +111,80 @@ class UploadSecondLevelDataBaseSerializer(serializers.Serializer):
         validators.validate_file_extension_for_xlsx(file)
         return file
 
+class UploadAndCreateMembersSerializer(serializers.Serializer):
+    file = serializers.FileField()
+
+
+    def serializeUpload(self,dataBaseFile):
+        return convertXslsTOJson.run(file=dataBaseFile)
+    def create(self, validated_data):
+        dataBaseFile = validated_data.get('file')
+        data= self.serializeUpload(dataBaseFile)
+        allUserinfo = data.get('usersInfo')
+        for eachUser in allUserinfo:
+            password= str(eachUser.pop('password',1234567))
+            MEMBERSHIP_NO = eachUser.get('MEMBERSHIP_NO')
+            email = eachUser.get('email')
+            alumni_year =  '2023-08-3'
+            if MEMBERSHIP_NO is None: raise CustomError({'error':'Please MEMBERSHIP_NO is missing'})
+
+            if user_models.UserMemberInfo.objects.filter(value=MEMBERSHIP_NO).exists():
+                raise CustomError({'error':'Membership info has been registered already'})
+            userDBData = eachUser
+
+            chapter=None
+            chapter_instance=None
+            for key in userDBData.keys():
+                if key == 'chapter':
+                    chapter = userDBData[key]
+            if get_user_model().objects.filter(email=email).exists():raise CustomError({'error':'email already exists'})
+
+            if chapter:
+                if  auth_models.Chapters.objects.filter(name__icontains=chapter):
+                    chapter_instance = auth_models.Chapters.objects.filter(name__icontains=chapter).first()
+
+
+        user = get_user_model().objects.create_user(
+            email=email,
+            user_type='members',
+            password =password,
+            
+        )
+        user.is_active=True
+        user.save()
+        if chapter_instance:
+            "we going to add chapters if there is"
+            # user.chapter  = chapter_instance
+            user.save()
+            chapter_instance.user.add(user)
+            chapter_instance.save()
+
+        member = user_models.Memeber.objects.create(
+            user =user,
+            alumni_year=alumni_year
+        )
+        for key in userDBData.keys():
+            if not key =='password' and  not key == 'alumni_year':
+                user_models.UserMemberInfo.objects.create(
+                    name= key,
+                    value= userDBData[key],
+                    member=member
+                )   
+        charge_new_member_dues__fornimn.delay(user.id)
+        if connection.schema_name == 'man':
+            for key in userDBData.keys():
+                if key == 'SECTOR':
+                    exco_name = userDBData[key]
+                    acct_task.group_MAN_subSector_and_sector.delay(
+                        exco_name,member.id,type='sector'
+                    )
+                if key == 'SUB-SECTOR':
+                    exco_name = userDBData[key]
+                    acct_task.group_MAN_subSector_and_sector.delay(
+                        exco_name,member.id,type='sub-sector'
+                    )
+
+        return dict()
 
 
 class AdminManageCommiteeGroupSerializer(serializers.ModelSerializer):
