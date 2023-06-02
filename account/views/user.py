@@ -301,7 +301,9 @@ def get_membershipgrade(request,*args,**kwargs):
 
 
 class AdminUpdateMemberInfoViewSet(viewsets.ModelViewSet):
-    permission_classes =[ permissions.IsAuthenticated,custom_permissions.IsAdminOrSuperAdmin]
+    permission_classes =[ permissions.IsAuthenticated,
+                        #  custom_permissions.IsAdminOrSuperAdmin
+                         ]
     queryset = user_models.UserMemberInfo.objects.all()
     serializer_class = user.AdminUpdateMemberInfoCleaner
 
