@@ -102,22 +102,53 @@ def calMansPayment(form_one:ManProspectiveMemberFormOne):
         raise CustomError({'error':'Current Sales Turnover or Projected Sales Turn over must be created'})
     if form_one.office_state.lower()=='lagos':
         is_in_lagos =True
+
+ 
+    if int(turnover) >= 40000000000:
+        "line 1 in man docs"
+        amount= 2000000
+        return calmanLevyFee(amount,is_in_lagos)
+
     
+    if int(turnover) >=20000000000 or int(turnover) <= 39990000000:
+        "line 2 in man docs"
+        amount= 1500000  
+        return calmanLevyFee(amount,is_in_lagos)
+
+    
+    if int(turnover) >=15000000000 or int(turnover) <= 19990000000:
+        "line 3 in man docs"
+        amount=  1400000
+        return calmanLevyFee(amount,is_in_lagos)
+
+
+    if int(turnover) >=10000000000 or int(turnover) <= 14990000000:
+        "line 4 in man docs"
+        amount = 850000
+        return calmanLevyFee(amount,is_in_lagos)
+
+
+    if int(turnover) >=7000000000 or int(turnover) <= 9990000000:
+        "line 5 in man docs"
+        amount =  500000
+        return calmanLevyFee(amount,is_in_lagos)
+
+
+    if int(turnover) >=4000000000 or int(turnover) <= 6990000000:
+        "line 6 in man docs"
+        amount= 375000
+        return calmanLevyFee(amount,is_in_lagos)
+
+
     if int(turnover) >=100000000 or int(turnover) <= 249900000:
         "line 11 in man docs"
         
         amount = 160000
         return calmanLevyFee(amount,is_in_lagos)
 
-    if int(turnover) >=250000000 or int(turnover) <= 499900000:
-        "line 10 in man docs"
-        amount = 180000
-        return calmanLevyFee(amount,is_in_lagos)
-
-
-    if int(turnover) >=500000000 or int(turnover) <= 749900000:
-        "line 9 in man docs"
-        amount = 200000
+    if int(turnover) >=1500000000 or int(turnover) <= 3990000000:
+        "line 7 in man docs"
+        amount = 260000
         return calmanLevyFee(amount,is_in_lagos)
 
 
@@ -126,40 +157,19 @@ def calMansPayment(form_one:ManProspectiveMemberFormOne):
         amount = 220000
         return calmanLevyFee(amount,is_in_lagos)
 
-    if int(turnover) >=1500000000 or int(turnover) <= 3990000000:
-        "line 7 in man docs"
-        amount = 260000
+    if int(turnover) >=500000000 or int(turnover) <= 749900000:
+        "line 9 in man docs"
+        amount = 200000
         return calmanLevyFee(amount,is_in_lagos)
 
-    if int(turnover) >=4000000000 or int(turnover) <= 6990000000:
-        "line 6 in man docs"
-        amount= 375000
+
+    if int(turnover) >=250000000 or int(turnover) <= 499900000:
+        "line 10 in man docs"
+        amount = 180000
         return calmanLevyFee(amount,is_in_lagos)
 
-    if int(turnover) >=7000000000 or int(turnover) <= 9990000000:
-        "line 5 in man docs"
-        amount =  500000
-        return calmanLevyFee(amount,is_in_lagos)
 
-    if int(turnover) >=10000000000 or int(turnover) <= 14990000000:
-        "line 4 in man docs"
-        amount = 850000
-        return calmanLevyFee(amount,is_in_lagos)
-    
-    if int(turnover) >=15000000000 or int(turnover) <= 19990000000:
-        "line 3 in man docs"
-        amount=  1400000
-        return calmanLevyFee(amount,is_in_lagos)
-    
-    if int(turnover) >=20000000000 or int(turnover) <= 39990000000:
-        "line 2 in man docs"
-        amount= 1500000  
-        return calmanLevyFee(amount,is_in_lagos)
 
-    if int(turnover) >= 40000000000:
-        "line 1 in man docs"
-        amount= 2000000
-        return calmanLevyFee(amount,is_in_lagos)
 
     if amount == 0.00:
         raise CustomError({'error':'please reach out to admin beacuse your sales turn over does not meet the set requirement'})
