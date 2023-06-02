@@ -311,7 +311,7 @@ class AdminUpdateMemberInfoViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         member_id = self.request.query_params.get('member_id')
-        queryset = user_models.UserMemberInfo.filter(member__id =member_id)
+        queryset = user_models.UserMemberInfo.objects.filter(member__id =member_id)
         return queryset
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
