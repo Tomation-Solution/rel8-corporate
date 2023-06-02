@@ -87,10 +87,17 @@ def calMansPayment(form_one:ManProspectiveMemberFormOne):
     is_in_lagos = False
     amount = 0.00
     turnover = None
-    if form_one.current_sales_turnover !='.':
-        turnover = int(form_one.current_sales_turnover)
-    if form_one.projected_sales_turnover !='.':
-        turnover = int(form_one.projected_sales_turnover)
+    "reason for the strip is to remove emptye space so if it direcly == 0 that  means it truly emtyp"
+    if form_one.current_sales_turnover !='.' or  len(form_one.current_sales_turnover.strip()) ==0:
+        try:
+            turnover = int(form_one.current_sales_turnover)
+        except:
+            turnover = 0
+    if form_one.projected_sales_turnover !='.' or len(form_one.projected_sales_turnover.strip()) ==0:
+        try:
+            turnover = int(form_one.projected_sales_turnover)
+        except:
+            turnover = 0
     if turnover is None:
         raise CustomError({'error':'Current Sales Turnover or Projected Sales Turn over must be created'})
     if form_one.office_state.lower()=='lagos':
