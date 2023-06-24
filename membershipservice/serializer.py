@@ -46,4 +46,89 @@ class MembersReIssuanceFormSerializer(serializers.ModelSerializer):
         model= models.MembersReIssuanceForm
         fields ='__all__'
 
+# class Extra:
 
+class RenewalOFCertWithThatChangeThierOriginialNameSerializer(serializers.ModelSerializer):
+    member = serializers.SerializerMethodField()
+
+    def get_member(self,instance):
+        return {
+            'member_id':instance.members_reissuanceform.member.id,
+            'name':instance.members_reissuanceform.member.full_name
+        }
+    class Meta:
+        model =models.RenewalOFCertWithThatChangeThierOriginialName
+        fields ='__all__'
+
+class CompaniesThatlostManCertSerializer(serializers.ModelSerializer):
+    member = serializers.SerializerMethodField()
+
+    def get_member(self,instance):
+        return {
+            'member_id':instance.members_reissuanceform.member.id,
+            'name':instance.members_reissuanceform.member.full_name
+        }
+
+    class Meta:
+        model = models.CompaniesThatlostManCert
+        fields = '__all__'
+
+
+
+
+class CompaniesDeactivationActivationSerializer(serializers.ModelSerializer):
+
+
+    member = serializers.SerializerMethodField()
+
+    def get_member(self,instance):
+        return {
+            'member_id':instance.members_reissuanceform.member.id,
+            'name':instance.members_reissuanceform.member.full_name
+        }
+    class Meta:
+        model = models.CompaniesDeactivationActivationService
+        fields ='__all__'
+
+
+class UpdateOnProductManufacturedSerializer(serializers.ModelSerializer):
+
+    member = serializers.SerializerMethodField()
+
+    def get_member(self,instance):
+        return {
+            'member_id':instance.members_reissuanceform.member.id,
+            'name':instance.members_reissuanceform.member.full_name
+        }
+    class Meta:
+        model = models.UpdateOnProductManufactured
+        fields ='__all__'
+
+
+
+class UpdateFactoryLocationSerializer(serializers.ModelSerializer):
+
+
+    member = serializers.SerializerMethodField()
+
+    def get_member(self,instance):
+        return {
+            'member_id':instance.members_reissuanceform.member.id,
+            'name':instance.members_reissuanceform.member.full_name
+        }
+    class Meta:
+        model = models.UpdateFactoryLocation
+        fields ='__all__'
+
+
+class MergerOfMemberCompaniesSerializer(serializers.ModelSerializer):
+    member = serializers.SerializerMethodField()
+
+    def get_member(self,instance):
+        return {
+            'member_id':instance.members_reissuanceform.member.id,
+            'name':instance.members_reissuanceform.member.full_name
+        }
+    class Meta:
+        model = models.MergerOfMemberCompanies
+        fields ='__all__'

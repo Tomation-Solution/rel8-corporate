@@ -52,7 +52,7 @@ class RenewalOFCertWithThatChangeThierOriginialName(models.Model):
     bank_teller_of_payment = models.FileField(upload_to='bank_teller_of_payment/%d/')
     status = models.CharField(default='pending',max_length=10)
     members_reissuanceform =models.ForeignKey(MembersReIssuanceForm,on_delete=models.CASCADE)
-
+    note = models.TextField(default='')
     certificate_which_expired_on_thirtyone = models.FileField(upload_to='certificate_which_expired_on31/%d/',null=True,default=None,blank=True)
     copy_of_certificate_incoporation = models.FileField(upload_to='copy_of_certificate_incoporation/%d/',null=True,default=None,blank=True)
     audited_finicial_statement_one =models.FileField(upload_to='audited_finicial_statement_one/%d/',null=True,default=None,blank=True)
@@ -65,8 +65,45 @@ class CompaniesThatlostManCert(models.Model):
     status = models.CharField(default='pending',max_length=10)
     bank_teller_of_payment = models.FileField(upload_to='bank_teller_of_payment/%d/')
     affidavit_from_court = models.FileField(upload_to='affidavit_from_court/%d/')
+    note = models.TextField(default='')
 
     certificate_which_expired_on_thirtyone = models.FileField(upload_to='certificate_which_expired_on31/%d/',null=True,default=None,blank=True)
     copy_of_certificate_incoporation = models.FileField(upload_to='copy_of_certificate_incoporation/%d/',null=True,default=None,blank=True)
     audited_finicial_statement_one =models.FileField(upload_to='audited_finicial_statement_one/%d/',null=True,default=None,blank=True)
     audited_finicial_statement_two =models.FileField(upload_to='audited_finicial_statement_two/%d/',null=True,default=None,blank=True)
+
+
+
+class CompaniesDeactivationActivationService(models.Model):
+    note = models.TextField(default='')
+    members_reissuanceform =models.ForeignKey(MembersReIssuanceForm,on_delete=models.CASCADE)
+    status = models.CharField(default='pending',max_length=10)
+    letter_request_for_activation_or_deactivation =models.FileField(upload_to='letter_request_for_activation_or_deactivation/%d/',null=True,default=None,blank=True)
+    submit_original_membership_cert =models.FileField(upload_to='submit_original_membership_cert/%d/',null=True,default=None,blank=True)
+
+class UpdateOnProductManufactured(models.Model):
+    members_reissuanceform =models.ForeignKey(MembersReIssuanceForm,on_delete=models.CASCADE)
+    status = models.CharField(default='pending',max_length=10)
+    most_recent_finicial_statement =models.FileField(upload_to='most_recent_finicial_statement/%d/',null=True,default=None,blank=True)
+    product_report_for_branch_inspection =models.FileField(upload_to='product_report_for_branch_inspection/%d/',null=True,default=None,blank=True)
+    note = models.TextField(default='')
+
+
+
+class UpdateFactoryLocation(models.Model):
+    members_reissuanceform =models.ForeignKey(MembersReIssuanceForm,on_delete=models.CASCADE)
+    status = models.CharField(default='pending',max_length=10)
+    most_recent_finicial_statement =models.FileField(upload_to='most_recent_finicial_statement/%d/',null=True,default=None,blank=True)
+    product_report_for_branch_inspection =models.FileField(upload_to='product_report_for_branch_inspection/%d/',null=True,default=None,blank=True)
+    note = models.TextField(default='')
+
+
+
+
+class   MergerOfMemberCompanies(models.Model):
+    members_reissuanceform =models.ForeignKey(MembersReIssuanceForm,on_delete=models.CASCADE)
+    status = models.CharField(default='pending',max_length=10)
+    letter_requesting_merge =models.FileField(upload_to='letter_requesting_merge/%d/',null=True,default=None,blank=True)
+    most_recent_finicial_statement =models.FileField(upload_to='most_recent_finicial_statement/%d/',null=True,default=None,blank=True)
+    note = models.TextField(default='')
+
