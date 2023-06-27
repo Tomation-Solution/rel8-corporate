@@ -12,6 +12,7 @@ from Dueapp.views.payments import calMansPayment
 from django.shortcuts import get_object_or_404
 from  rest_framework.response import Response
 from mymailing.tasks import sendRemarkNotification
+from mymailing.EmailConfirmation import sendAcknowledgementOfApplication
 class CreateManPropectiveMemberViewset(viewsets.ViewSet):
     serializer_class = serializer.CreateManPropectiveMemberSerializer
 
@@ -121,6 +122,25 @@ class AdminManageManProspectiveMemberViewSet(viewsets.ViewSet):
             message='updated'
         return Success_response(message)
         
+    @action(detail=False,methods=['post'])
+    def acknowledgement_of_application(self,request,*args,**kwargs):
+        id =request.data.get('id','-1')
+        profile = manrelatedPropectiveModels.ManProspectiveMemberProfile.objects.get(id=id)
+        profile.has_sent_acknowledgement=True
+        profile.application_status='inspection_of_factory_inspection'
+        profile.save()
+        sendAcknowledgementOfApplication.delay(profile.id)
+        return Success_response('Success')
+    @action(detail=False,methods=['post'])
+    def factory_inspection(self,request,*args,**kwargs):
+        file = request.data.get('file',None)
+        if file is None: raise CustomError({'error':'Provide a file'})
+        id =request.data.get('id','-1')
+        profile = manrelatedPropectiveModels.ManProspectiveMemberProfile.objects.get(id=id)
+        profile.inspection_factory_file  = file
+        profile.application_status='ready_for_presentation_of_national_council'
+        profile.save()
+        return  Success_response('Inspection Saved Successfully')
 
 class AdminManageRemark(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated,

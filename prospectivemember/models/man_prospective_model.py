@@ -24,12 +24,18 @@ class ManProspectiveMemberProfile(models.Model):
     admin = models.TextField(default='no remark from admin')
     has_paid_subcription = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True,null=True,blank=True)
+    has_sent_acknowledgement  =models.BooleanField(default=False)
+    inspection_factory_file = models.FileField(default=None,null=True,upload_to='man_inspection/%d/')
     #  datetime.now()
     class ManProspectiveMemberApplicationStatusChoice(models.TextChoices):
+        application_pending ='application_pending'
+        acknowledgement_of_application='acknowledgement_of_application'
+        inspection_of_factory_inspection ='inspection_of_factory_inspection'
+        ready_for_presentation_of_national_council ='ready_for_presentation_of_national_council'
         approval_in_progress = 'approval_in_progress'
-        approval_in_principle_granted = 'approval_in_principle_granted'
-        final_approval = 'final_approval'
         decline = 'decline'
+        final_approval = 'final_approval'
+        
 
     application_status = models.CharField(max_length=100,choices=ManProspectiveMemberApplicationStatusChoice.choices,default=ManProspectiveMemberApplicationStatusChoice.approval_in_progress)
 

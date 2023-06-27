@@ -11,7 +11,9 @@ from meeting import models as meeting_models
 from account.models import user as models_user
 from django.db import connection
 from mymailing.views import send_mail
-
+from prospectivemember.models import man_prospective_model
+from Dueapp.views.payments import calMansPayment
+from celery import shared_task
 
 def activateEmail(user,to_email):
     mail_subject = 'Activate your user account'
@@ -100,3 +102,27 @@ def sendMeetingInvitationMail(user,meeting:meeting_models.Meeting,meeting_proxy_
 
     send_mail(mail_subject,'',domain_mail,recipient_list=to_emails,html_message=message,)
 
+
+@shared_task()
+def sendAcknowledgementOfApplication(propectiveID):
+    profile = man_prospective_model.ManProspectiveMemberProfile.objects.get(id=propectiveID)
+    
+
+    form_one,created= man_prospective_model.ManProspectiveMemberFormOne.objects.get_or_create(prospective_member=profile)
+    domain_mail = os.environ['domain_mail']
+    domain = connection.schema_name+'.'+os.environ['domain']
+    breakdown =calMansPayment(form_one)
+    data ={
+        'short_name':connection.schema_name,
+        'name_of_company':profile.name_of_company,
+        'breakdown':breakdown,
+        }
+    mail_subject = f'MAN Acknowledgement Of Application'
+    message = render_to_string('acknowledgement_of_application.html',context=data)
+    send_mail(
+        mail_subject,
+        '',
+        domain_mail,
+        recipient_list=[{"email":profile.user.email,"name":"MAN"}],
+        html_message=message,
+    )
