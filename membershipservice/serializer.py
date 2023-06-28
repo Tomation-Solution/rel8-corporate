@@ -5,16 +5,18 @@ import ast
 
 class MembersReIssuanceFormSerializer(serializers.ModelSerializer):
     yearly_turn  = serializers.SerializerMethodField()
-    extras= serializers.SerializerMethodField()
+    # extras= serializers.SerializerMethodField()
 
     file_fordate_one = serializers.FileField(required=False)
     file_fordate_two = serializers.FileField(required=False)
     date_one = serializers.DateField(required=False)
     date_two = serializers.DateField(required=False)
 
-    products_manufactured =serializers.JSONField(required=False)
-    imported_raw_materials =serializers.JSONField(required=False)
-    locally_sourced_raw_materials =serializers.JSONField(required=False)
+    # products_manufactured =serializers.JSONField(required=False)
+    # imported_raw_materials =serializers.JSONField(required=False)
+    # locally_sourced_raw_materials =serializers.JSONField(required=False)
+
+    # plants = serializers.JSONField(required=False)
     def get_yearly_turn(self,instance):
         data,created = models.YearlyTurnOVer.objects.get_or_create(members_reissuanceform=instance)
         url_one =''
@@ -30,17 +32,25 @@ class MembersReIssuanceFormSerializer(serializers.ModelSerializer):
             'file_fordate_two':url_two,
         }
 
-    def get_extras(self,instance):
-        data={
-            'plants':ast.literal_eval(instance.plants),
-            'products_manufactured':ast.literal_eval(instance.products_manufactured),
-            'imported_raw_materials':ast.literal_eval(instance.plants),
-        }
-        return data
+    # def get_extras(self,instance):
+    #     data={
+    #         'plants':ast.literal_eval(instance.plants),
+    #         'products_manufactured':ast.literal_eval(instance.products_manufactured),
+    #         'imported_raw_materials':ast.literal_eval(instance.plants),
+    #     }
+    #     return data
 
-    # def update(self, instance, validated_data):
-    #     super().update(instance, validated_data)
-    #     ins 
+    def update(self, instance, validated_data):
+        # products_manufactured =validated_data.pop('products_manufactured')
+        # imported_raw_materials =validated_data.pop('imported_raw_materials')
+        # locally_sourced_raw_materials =validated_data.pop('locally_sourced_raw_materials')
+
+        # plants = json.loads(validated_data.pop('plants',[]))
+        # print(type(plants))
+        super().update(instance, validated_data)
+
+        return instance
+
 
     class Meta:
         model= models.MembersReIssuanceForm

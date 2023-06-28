@@ -1,9 +1,8 @@
 from django.db import models
 from account.models.user import  Memeber
-# Create your models here.
+import json
 
-
-
+def defualts(): return json.dumps(["0","0"])
 class MembersReIssuanceForm(models.Model):
     member = models.OneToOneField(Memeber,on_delete=models.CASCADE,null=True,default=None)
     name_of_company  = models.CharField(max_length=500)
@@ -14,11 +13,11 @@ class MembersReIssuanceForm(models.Model):
     company_official_email = models.EmailField()
     corporate_addresse = models.TextField()
     # [{name:'pant1 name ..'}] that how plants should be structured
-    plants = models.JSONField( default=dict)
+    # plants = models.JSONField( blank=True,default=defualts)
     # [{name:'pant1 name ..'}] products_manufactured strucuted
-    products_manufactured =models.JSONField( default=dict)
-    imported_raw_materials =models.JSONField( default=dict)
-    locally_sourced_raw_materials =models.JSONField( default=dict)
+    # products_manufactured =models.JSONField(blank=True,default=defualts)
+    # imported_raw_materials =models.JSONField(blank=True,default=defualts)
+    # locally_sourced_raw_materials =models.JSONField(blank=True,default=defualts)
     ceo_name = models.CharField(max_length=40)
     phone_number = models.CharField(max_length=15)
 
