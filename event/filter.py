@@ -28,9 +28,10 @@ class EventLookUp(django_filters.FilterSet):
     # membership_grade = django_filters.NumberFilter(field_name='membership_grade',)
     commitee = django_filters.NumberFilter(field_name='commitee')
     chapters = django_filters.NumberFilter(field_name='chapters')
+    id = django_filters.NumberFilter(field_name='id')
     class Meta:
         model = models.Event
         fields = [
             'council','is_for_all_grade','not_council','not_commitee','not_chapters',
-           'commitee','chapters'
+           'commitee','chapters','id'
         ]
