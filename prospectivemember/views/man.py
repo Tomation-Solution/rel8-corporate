@@ -13,6 +13,7 @@ from django.shortcuts import get_object_or_404
 from  rest_framework.response import Response
 from mymailing.tasks import sendRemarkNotification
 from mymailing.EmailConfirmation import sendAcknowledgementOfApplication
+from django.shortcuts import get_object_or_404
 class CreateManPropectiveMemberViewset(viewsets.ViewSet):
     serializer_class = serializer.CreateManPropectiveMemberSerializer
 
@@ -36,8 +37,8 @@ class PropectiveMemberManageFormOneViewSet(viewsets.ModelViewSet,StatusView):
 
     @action(detail=False,methods=['get'])
     def get_subscriptio_payment_breakdown(self,request):
-        form_one,created= manrelatedPropectiveModels.ManProspectiveMemberFormOne.objects.get_or_create(prospective_member=request.user.manprospectivememberprofile)
-        
+        form_one = get_object_or_404(manrelatedPropectiveModels.ManProspectiveMemberFormOne,prospective_member=request.user.manprospectivememberprofile)
+
         return Success_response('Successfull',data=calMansPayment(form_one),status_code=status.HTTP_200_OK)
 
     def create(self, request, *args, **kwargs):
