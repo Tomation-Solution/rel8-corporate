@@ -26,6 +26,7 @@ from mailing.models import EmailInvitation
 from account import task as acct_task
 from rest_framework.decorators import api_view
 import json
+from utils.extraFunc import send_push_notification
 # create Super user of the Alumni which is the owner
 from pusher_push_notifications import PushNotifications
 beams_client = PushNotifications(
@@ -133,6 +134,9 @@ class Login(ObtainAuthToken):
 
 
     def post(self, request, *args, **kwargs):
+        # send_push_notification(
+        #     'd',"Welcomee",'This is nice'
+        # )
         serializer = self.serializer_class(data=request.data,context={'request':request})
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data['user']
@@ -207,7 +211,7 @@ class UploadSecondLevelDataBaseView(CreateAPIView,UpdateAPIView):
 
 class ManageMemberValidation(viewsets.ViewSet):
 
-
+    permission_classes =[AllowAny]
     # @action(detail=False,methods=['post'])
     # def manual_member_creation(self,request,*args,**kwargs):
     #     pass

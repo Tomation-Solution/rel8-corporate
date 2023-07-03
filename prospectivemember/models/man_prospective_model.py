@@ -113,16 +113,16 @@ class ManProspectiveMemberFormOne(models.Model):
 
 
 class ManProspectiveMemberFormTwo(models.Model):
-    corporate_affairs_commision = models.FileField(upload_to='corporate_affairs_commision/',null=True, default=None,
-                            storage=RawMediaCloudinaryStorage())
-    letter_of_breakdown_of_payment_and_docs_attached = models.FileField(upload_to='letter_of_breakdown_of_payment_and_docs_attached/',null=True, default=None,
-                            storage=RawMediaCloudinaryStorage())
-    first_year_of_buisness_plan = models.FileField(upload_to='first_year_of_buisness_plan/',null=True, default=None,
-                            storage=RawMediaCloudinaryStorage())
-    second_year_of_buisness_plan = models.FileField(upload_to='second_year_of_buisness_plan/',null=True, default=None,
-                            storage=RawMediaCloudinaryStorage())
-    photocopy_of_your_reciept_issued_on_purchase_of_applicant_form = models.FileField(upload_to='photocopy_of_your_reciept_issued_on_purchase_of_applicant_form/',null=True, default=None,
-                            storage=RawMediaCloudinaryStorage())
+    corporate_affairs_commision = models.FileField(upload_to='commision/',null=True, default=None,
+                            storage=RawMediaCloudinaryStorage(),max_length=700)
+    letter_of_breakdown_of_payment_and_docs_attached = models.FileField(upload_to='attached/',null=True, default=None,
+                            storage=RawMediaCloudinaryStorage(),max_length=700)
+    first_year_of_buisness_plan = models.FileField(upload_to='buisness_plan/',null=True, default=None,
+                            storage=RawMediaCloudinaryStorage(),max_length=700)
+    second_year_of_buisness_plan = models.FileField(upload_to='buisness_plan2/',null=True, default=None,
+                            storage=RawMediaCloudinaryStorage(),max_length=700)
+    photocopy_of_your_reciept_issued_on_purchase_of_applicant_form = models.FileField(upload_to='applicant_form2/',null=True, default=None,
+                            storage=RawMediaCloudinaryStorage(),max_length=700)
     prospective_member = models.OneToOneField(ManProspectiveMemberProfile,on_delete=models.CASCADE)
 
     def __str__(self):
