@@ -26,7 +26,7 @@ from mailing.models import EmailInvitation
 from account import task as acct_task
 from rest_framework.decorators import api_view
 import json
-from utils.extraFunc import send_push_notification
+# from utils.extraFunc import send_push_notification
 # create Super user of the Alumni which is the owner
 from pusher_push_notifications import PushNotifications
 beams_client = PushNotifications(
