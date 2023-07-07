@@ -91,12 +91,18 @@ class AdminManageManProspectiveMemberViewSet(viewsets.ViewSet):
     def get_submissions(self,request,*args,**kwargs):
         details = request.query_params.get('id',None)
         application_status = request.query_params.get('application_status','approval_in_progress')
+        executive_email = request.query_params.get('executive_email','undefine@gmail.com')
         if details is None:
             all_propective_member_profiles = manrelatedPropectiveModels.ManProspectiveMemberProfile.objects.filter(has_paid_subcription=True,application_status=application_status)
             clean_data = serializer.ProspectiveManMemberCleaner(instance=all_propective_member_profiles,many=True)
                 
             return Success_response ('success',data=clean_data.data,)
-        
+        if executive_email:
+            all_propective_member_profiles = manrelatedPropectiveModels.ManProspectiveMemberProfile.objects.filter(
+                has_paid_subcription=True,executive_email=executive_email)
+            clean_data = serializer.ProspectiveManMemberCleaner(instance=all_propective_member_profiles,many=True)
+                
+            return Success_response ('success',data=clean_data.data,)
         all_propective_member_profiles =get_object_or_404(manrelatedPropectiveModels.ManProspectiveMemberProfile,id=details)
 
         clean_data = serializer.ProspectiveManMemberCleaner(instance=all_propective_member_profiles,many=False)
