@@ -104,7 +104,7 @@ def sendMeetingInvitationMail(user,meeting:meeting_models.Meeting,meeting_proxy_
 
 
 @shared_task()
-def sendAcknowledgementOfApplication(propectiveID):
+def sendAcknowledgementOfApplication(propectiveID,content):
     profile = man_prospective_model.ManProspectiveMemberProfile.objects.get(id=propectiveID)
     
 
@@ -116,6 +116,7 @@ def sendAcknowledgementOfApplication(propectiveID):
         'short_name':connection.schema_name,
         'name_of_company':profile.name_of_company,
         'breakdown':breakdown,
+        'content':content
         }
     mail_subject = f'MAN Acknowledgement Of Application'
     message = render_to_string('acknowledgement_of_application.html',context=data)
@@ -126,3 +127,11 @@ def sendAcknowledgementOfApplication(propectiveID):
         recipient_list=[{"email":profile.user.email,"name":"MAN"}],
         html_message=message,
     )
+    if profile.executive_email:
+        send_mail(
+            'MAN assign you to a prospective member',
+            '',
+            domain_mail,
+            recipient_list=[{"email":profile.executive_email,"name":"MAN"}],
+            html_content=message
+        )

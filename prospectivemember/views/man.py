@@ -126,8 +126,13 @@ class AdminManageManProspectiveMemberViewSet(viewsets.ViewSet):
     @action(detail=False,methods=['post'])
     def acknowledgement_of_application(self,request,*args,**kwargs):
         id =request.data.get('id','-1')
+        content = request.data.get('content',None)
+        executive_email= request.data.get('email',None)
+        if executive_email is None or content is None:
+            raise CustomError(message='Please Enter Content and Email')
         profile = manrelatedPropectiveModels.ManProspectiveMemberProfile.objects.get(id=id)
         profile.has_sent_acknowledgement=True
+        profile.executive_email = executive_email
         profile.application_status='inspection_of_factory_inspection'
         profile.save()
         sendAcknowledgementOfApplication.delay(profile.id)

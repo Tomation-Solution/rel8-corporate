@@ -18,6 +18,7 @@ class ManProspectiveMemberProfile(models.Model):
     has_paid = models.BooleanField(default=False)
     paystack = models.CharField(max_length=300)
     amount =  models.DecimalField(decimal_places=2,max_digits=10,default=0.00)
+    executive_email = models.EmailField(default=None,null=True)
 
     subcription_amount = models.DecimalField(decimal_places=2,max_digits=10,default=0.00)
     subcription_paystack = models.CharField(max_length=300,default='')

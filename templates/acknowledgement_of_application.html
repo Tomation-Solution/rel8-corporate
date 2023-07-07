@@ -11,13 +11,15 @@
 <h3>Hi, {{name_of_company}}</h3>
 
 
-<p>
-    Your Application Has Been Approved Please wait for our branch rep to visit you. 
-</p>
+{{content}}
 
 <h2>Break Payment BreakDown</h2>
 <p><strong>Amount Paid</strong>: {{breakdown.amountToBePaid}}</p>
+{% if breakdown.is_in_lagos %}
 <p><strong>Lagos Fee</strong>: {{breakdown.is_in_lagos}}</p>
+{% else %}
+<p></p>
+{% endif %}
 <p>
     Regards <strong>MAN</strong>
 </p>
