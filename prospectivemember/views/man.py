@@ -135,7 +135,7 @@ class AdminManageManProspectiveMemberViewSet(viewsets.ViewSet):
         profile.executive_email = executive_email
         profile.application_status='inspection_of_factory_inspection'
         profile.save()
-        sendAcknowledgementOfApplication.delay(profile.id)
+        sendAcknowledgementOfApplication.delay(profile.id,content)
         return Success_response('Success')
     @action(detail=False,methods=['post'])
     def factory_inspection(self,request,*args,**kwargs):
