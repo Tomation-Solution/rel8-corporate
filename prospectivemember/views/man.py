@@ -158,6 +158,20 @@ class AdminManageManProspectiveMemberViewSet(viewsets.ViewSet):
         profile.save()
         return  Success_response('Inspection Saved Successfully')
 
+    @action(detail=False,methods=['post'])
+    def review_factory(self,request,*args,**kwargs):
+        id =request.data.get('id','-1')
+        review = request.data.get('review','.')
+        decision =  request.data.get('decision','rework')
+        profile = manrelatedPropectiveModels.ManProspectiveMemberProfile.objects.get(id=id)
+
+        profile.review_text=review
+        profile.application_status=decision
+        profile.save()
+        return Success_response('Success')
+
+
+
 class AdminManageRemark(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated,
                         #   IsAdminOrSuperAdmin

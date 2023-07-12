@@ -36,10 +36,10 @@ class ManProspectiveMemberProfile(models.Model):
         approval_in_progress = 'approval_in_progress'
         decline = 'decline'
         final_approval = 'final_approval'
-        
+        rework ='rework'
 
     application_status = models.CharField(max_length=100,choices=ManProspectiveMemberApplicationStatusChoice.choices,default=ManProspectiveMemberApplicationStatusChoice.approval_in_progress)
-
+    review_text = models.TextField(default='')
     def __str__(self):
         return self.name_of_company
 
