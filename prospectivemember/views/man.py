@@ -154,7 +154,7 @@ class AdminManageManProspectiveMemberViewSet(viewsets.ViewSet):
         id =request.data.get('id','-1')
         profile = manrelatedPropectiveModels.ManProspectiveMemberProfile.objects.get(id=id)
         profile.inspection_factory_file  = file
-        profile.application_status='ready_for_presentation_of_national_council'
+        profile.application_status='inspection_of_factory_inspection'
         profile.save()
         return  Success_response('Inspection Saved Successfully')
 
