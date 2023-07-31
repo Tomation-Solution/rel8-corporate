@@ -25,6 +25,19 @@ def generate_n(number:int=10):
     return ''.join(random.choice(letters) for i in range(number))
 
 
+
+
+def paystackLikeResponse(link:str):
+    return {
+            "status": True,
+            "message": "Authorization URL created",
+            "data": {
+                "authorization_url": link,
+                "access_code": "",
+                "reference": ""
+            }
+        }
+
 # def send_push_notification(registration_token, title, message):
 #     # Create a message
 #     notification = messaging.Notification(title=title, body=message)

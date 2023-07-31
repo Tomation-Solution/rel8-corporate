@@ -26,7 +26,7 @@ from mymailing import tasks as mymailing_task
 from prospectivemember.models import general as generalProspectiveModels
 from django.shortcuts import get_object_or_404
 from publication.models import Publication
-from utils.extraFunc import generate_n
+from utils.extraFunc import generate_n,paystackLikeResponse
 
 def very_payment(request,reference=None):
     # this would be in the call back to check if the payment is a success
@@ -394,7 +394,7 @@ class InitPaymentTran(APIView):
             #     # instance.paystack_key= data['data']['reference']
             #     # instance.save()
 
-                return Success_response(msg='Success',data=data)
+                return Success_response(msg='Success',data= paystackLikeResponse(data['data']['link']) )
         
         raise CustomError(message='Some Error Occured Please Try Again',status_code=status.HTTP_503_SERVICE_UNAVAILABLE)
 
@@ -493,7 +493,7 @@ def webhookPayloadHandler(meta_data,user):
                 prospective_member.save()
 
         if meta_data['forWhat'] == 'man_prospective_subscription_payment':
-            member_id =meta_data['member_id']
+            # member_id =meta_data['member_id']
             instanceID = meta_data['instanceID']
             amount_to_be_paid= meta_data['amount_to_be_paid']
             if connection.schema_name == 'man':
@@ -536,11 +536,11 @@ def useFlutterWaveWebhook(request,pk=None):
         'forWhat':forWhat,
         'instanceID':instanceID,
         'schema_name':schema_name,
-        'amount_to_be_paid':amount
+        'amount_to_be_paid':amount,
     }
     connection.set_schema(schema_name=meta_data['schema_name'])
     user = get_user_model().objects.get(id=user_id)
-
+    # meta_data['member_id']= Memeber.objects.filter(user=user).first().id
 
     if data.get('status') == 'successful' or data.get('event') == 'charge.completed':
         return webhookPayloadHandler(meta_data,user)

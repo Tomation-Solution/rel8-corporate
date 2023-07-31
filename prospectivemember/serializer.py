@@ -11,57 +11,100 @@ from prospectivemember.models.man_prospective_model import (ManProspectiveMember
 ManProspectiveMemberFormOne,ManProspectiveMemberFormTwo,Remark)
 from utils.custom_response import Success_response
 from rest_framework import status
+from utils.extraFunc import generate_n,paystackLikeResponse
 
 class CreateManPropectiveMemberSerializer(serializers.ModelSerializer):
 
     def _process_paymentlink(self,request,user):
-
+        payment_type = request.query_params.get('payment_type','paystack')
         schema_name = request.tenant.schema_name
         client_tenant = rel8tenant_related_models.Client.objects.get(schema_name=schema_name)
-        if client_tenant.paystack_secret == 'null' or client_tenant.paystack_publickey == 'null':
-            raise CustomError({'error':'Paystack not active please reach out to the developer'})
-        PAYSTACK_SECRET = client_tenant.paystack_secret
-        instance =None
-        url = 'https://api.paystack.co/transaction/initialize/'
-        headers = {
-        'Authorization': f'Bearer {PAYSTACK_SECRET}',
-        'Content-Type' : 'application/json',
-        'Accept': 'application/json',}
-        reg = RegistrationAmountInfo.objects.all().first()
-        if reg is None:
-            raise CustomError({'error':'please reach out to your admin to set the amount to be paid'})
-        instance = ManProspectiveMemberProfile.objects.get(user=user)
-        member = instance
-        amount_to_be_paid = reg.amount
-        pk= instance.id
-        if instance.has_paid:
-            raise CustomError({'error':'Please hold for admin to process your info you have paid already'})
+        if payment_type == 'paystack':
 
-        body = {
-            "email": user.email,
-            "amount": convert_naira_to_kobo(amount_to_be_paid),
-            "metadata":{
-                "instanceID":pk,
-                'member_id':member.id,
-                "user_id":user.id,
-                "forWhat":'prospective_member_registration',
-                'schema_name':request.tenant.schema_name,
-                'user_type':user.user_type,
-                'amount_to_be_paid':str(amount_to_be_paid)
+            if client_tenant.paystack_secret == 'null' or client_tenant.paystack_publickey == 'null':
+                raise CustomError({'error':'Paystack not active please reach out to the developer'})
+            PAYSTACK_SECRET = client_tenant.paystack_secret
+            instance =None
+            url = 'https://api.paystack.co/transaction/initialize/'
+            headers = {
+            'Authorization': f'Bearer {PAYSTACK_SECRET}',
+            'Content-Type' : 'application/json',
+            'Accept': 'application/json',}
+            reg = RegistrationAmountInfo.objects.all().first()
+            if reg is None:
+                raise CustomError({'error':'please reach out to your admin to set the amount to be paid'})
+            instance = ManProspectiveMemberProfile.objects.get(user=user)
+            member = instance
+            amount_to_be_paid = reg.amount
+            pk= instance.id
+            if instance.has_paid:
+                raise CustomError({'error':'Please hold for admin to process your info you have paid already'})
+
+            body = {
+                "email": user.email,
+                "amount": convert_naira_to_kobo(amount_to_be_paid),
+                "metadata":{
+                    "instanceID":pk,
+                    'member_id':member.id,
+                    "user_id":user.id,
+                    "forWhat":'prospective_member_registration',
+                    'schema_name':request.tenant.schema_name,
+                    'user_type':user.user_type,
+                    'amount_to_be_paid':str(amount_to_be_paid)
+                },
+                # "callback_url":settings.PAYMENT_FOR_MEMBERSHIP_CALLBACK,
+                }
+
+            try:
+                resp = requests.post(url,headers=headers,data=json.dumps(body))
+            except requests.ConnectionError:
+                raise CustomError({"error":"Network Error"},status_code=status.HTTP_503_SERVICE_UNAVAILABLE)
+            if resp.status_code ==200:
+                data = resp.json()
+                instance.paystack_key= data['data']['reference']
+                instance.save()
+                return data
+
+
+        if payment_type == 'flutterwave':
+            if client_tenant.flutterwave_publickey =='null' or client_tenant.flutterwave_secret =='null':
+                raise CustomError({'error':'Flutterwave Key not active please reach out to the developer'})
+            url ='https://api.flutterwave.com/v3/payments'
+            headers = {
+                'Authorization': f'Bearer {client_tenant.flutterwave_secret}',
+                'Content-Type' : 'application/json',
+                'Accept': 'application/json',}
+            reg = RegistrationAmountInfo.objects.all().first()
+            if reg is None:
+                raise CustomError({'error':'please reach out to your admin to set the amount to be paid'})
+            instance = ManProspectiveMemberProfile.objects.get(user=user)
+            member = instance
+            amount_to_be_paid = reg.amount
+            pk= instance.id
+            if instance.has_paid:
+                raise CustomError({'error':'Please hold for admin to process your info you have paid already'})
+
+            body = {
+            'tx_ref': f'{generate_n(5)}---{"prospective_member_registration"}--{user.id}--{instance.id}--{schema_name}--{amount_to_be_paid}',
+            'amount': f'{amount_to_be_paid}',
+            'currency': "NGN",
+            'redirect_url': "https://www.google.com/",
+            # 'meta':generateInfo.get('metadata'),
+            'customer': {
+                'email':'test@gmail.com',
+                'phonenumber': "08162047348",
+                'name': "Markothedev"
             },
-            # "callback_url":settings.PAYMENT_FOR_MEMBERSHIP_CALLBACK,
             }
-
-        try:
-            resp = requests.post(url,headers=headers,data=json.dumps(body))
-        except requests.ConnectionError:
-            raise CustomError({"error":"Network Error"},status_code=status.HTTP_503_SERVICE_UNAVAILABLE)
-        if resp.status_code ==200:
-            data = resp.json()
-            instance.paystack_key= data['data']['reference']
-            instance.save()
-            return data
-
+            
+            try:
+                resp = requests.post(url,headers=headers,data=json.dumps(body))
+            except requests.ConnectionError:
+                raise CustomError({"error":"Network Error"},status_code=status.HTTP_503_SERVICE_UNAVAILABLE)
+            if resp.status_code ==200:
+                data = resp.json()
+                print({'data':data})
+                return  paystackLikeResponse(data['data']['link']) 
         raise CustomError(message='Some Error Occured Please Try Again',status_code=status.HTTP_503_SERVICE_UNAVAILABLE)
     
 
