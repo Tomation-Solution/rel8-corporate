@@ -1,7 +1,10 @@
-from urllib import parse
-
 from django.utils.encoding import force_str
 # from firebase_admin import credentials, messaging
+from urllib import parse
+import random
+import string
+from django.utils.encoding import force_str
+
 
 
 def replace_query_param(url, key, val):
@@ -16,6 +19,10 @@ def replace_query_param(url, key, val):
     return parse.urlunsplit((scheme, netloc, path, query, fragment))
 
 
+def generate_n(number:int=10):
+    "helps u generate random char that are unqiue"
+    letters = string.ascii_lowercase
+    return ''.join(random.choice(letters) for i in range(number))
 
 
 # def send_push_notification(registration_token, title, message):
