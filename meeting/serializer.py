@@ -20,12 +20,22 @@ class AdminManageMeetingSerializer(serializers.ModelSerializer):
 
 class MeetingSerializer(serializers.ModelSerializer):
     is_attending= serializers.SerializerMethodField()
+    is_authorized = serializers.SerializerMethodField()
     def get_is_attending(self,instance:models.Meeting):
         user = self.context.get('user',None)
         if user is None: return False
         is_attending = instance.meetingattendies_set.filter(members=user.memeber).exists()
         return is_attending
 
+    def get_is_authorized(self,instance:models.Meeting):
+        user = self.context.get('user',None)
+        member = user.memeber
+        if instance.exco is not None:
+            if instance.exco.member.filter(id=member.id).exists():
+                return True
+            else:
+                return False
+        return True
 
     class Meta:
         model = models.Meeting
