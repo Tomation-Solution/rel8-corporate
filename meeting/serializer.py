@@ -1,34 +1,61 @@
 from rest_framework import serializers
 from . import models
 from utils.custom_exceptions import CustomError
-
+from account.models.user import User,UserMemberInfo
 from django.shortcuts import get_object_or_404
 from account.serializers.user import MemberSerializer
 import json
 
 class AdminManageMeetingSerializer(serializers.ModelSerializer):
+    invitees = serializers.ListField(child=serializers.CharField(),write_only=True)
 
+    def get_invitees(self,instance):
+        'does not return anything it only a write field'
+        return None     
+    def create(self, validated_data):
+        # invitees are the list of names
+        print(validated_data)
+        list_of_invitee = validated_data.pop('invitees',[])
 
+        meeting = models.Meeting.objects.create(
+            **validated_data
+        )
+        for companyName in list_of_invitee:
+            companyInfo = UserMemberInfo.objects.filter(value=companyName)
+            if companyInfo.exists() and companyInfo.first():
+                print('Went ',companyName)
+                models.MeetingAttendies.objects.create(
+                    meeting = meeting,
+                    members=companyInfo.first().member
+                )
+        return meeting
+    
     class Meta:
         model = models.Meeting
         fields = '__all__'
         extra_kwargs  = {
             'chapters':{
                 'read_only':True
-            }
+            },
+           
         }
+        write_only_fields=['invitees']
 
 class MeetingSerializer(serializers.ModelSerializer):
     is_attending= serializers.SerializerMethodField()
     is_authorized = serializers.SerializerMethodField()
     def get_is_attending(self,instance:models.Meeting):
         user = self.context.get('user',None)
+        if user.user_type !='members':
+            return False
         if user is None: return False
         is_attending = instance.meetingattendies_set.filter(members=user.memeber).exists()
         return is_attending
 
     def get_is_authorized(self,instance:models.Meeting):
         user = self.context.get('user',None)
+        if user.user_type !='members':
+            return False
         member = user.memeber
         if instance.exco is not None:
             if instance.exco.member.filter(id=member.id).exists():
