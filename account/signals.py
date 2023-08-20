@@ -6,60 +6,35 @@ from utils.unique_account_creation_key_generator import key_generator
 from django.db import connection
 from . import task
 from Dueapp import models as due_models
+from utils.notification import NovuProvider
 # from mailing.tasks import send_activation_mail
 
 
 
 @receiver(post_save,sender=ExcoRole)
 def add_member_to_ExcoRole_group(sender,**kwargs):
-    instance = kwargs['instance']
+    'this add or update exco topics so we can send notifcations or mail to a group of sectors e.t.c'
+    isCreated = kwargs['created']
+    exco = kwargs['instance']
+    novu = NovuProvider()
+    if isCreated:
+        novu.create_topic(exco.name+'-exco')
+    if exco.member:
+        user_id = map(lambda member:f'{member.user.id}',exco.member.all())
+        user_id =list(user_id)
+        print({'user_id':user_id})
+        novu.sub_user_to_topic(name=exco.name+'-excos',user_ids=user_id)
 
-    "celery fuction that add new members to the group"
-    task.update_exco_chat.delay(instance.id)
+
 
 @receiver(post_save,sender=CommiteeGroup)
 def add_member_to_Commitee_group(sender,**kwargs):
-    instance = kwargs['instance']
-    "celery fuction that add new members to the group"
-
-
-
-# @receiver(post_save,sender=User)
-# def send_confirmation_mail_to_user_after_save(sender,**kwargs):
-#     instance = kwargs['instance']
-#     print("Started" ,)
-#     print({'schema anme':connection.schema_name})
-#     if not connection.schema_name == 'public':
-#         if kwargs['created']  and not instance.is_active and not instance.is_superuser:
-#             email_activation_obj:EmailInvitation = EmailInvitation.objects.create(
-#                 user=instance,
-#                 email=instance.email
-#             )
-#             instance.is_registration_mail_sent = True
-#             instance.save()
-#             if not instance.is_invited:
-#                 email_activation_obj.send_confirmation(first_name=" ", last_name="")
-
-
-
-# @receiver(post_save,sender=EmailInvitation)
-# def pre_save_email_activation(sender,**kwargs):
-#     instance = kwargs['instance']
-#     if not connection.schema_name == 'public':
-
-#         if not instance.activated and not instance.forced_expired:
-#             if not instance.key:
-#                 instance.key = key_generator(instance)
-
-#                 instance.save()
-        
-
-# @receiver(post_save,sender=User)
-# def send_confirmation_mail_to_user_after_save(sender,**kwargs):
-#     if kwargs['created']:
-#         print('Sending Boss')
-#         user = kwargs['instance']
-#         if user.user_type == 'members':
-#             'if it a member send the person a auth link'
-#             print('sending oo')
-#             send_activation_mail.delay(user.id,user.email)
+    isCreated = kwargs['created']
+    commitee = kwargs['instance']
+    novu = NovuProvider()
+    if isCreated:
+        novu.create_topic(commitee.name+'--commitee')
+    if commitee.members:
+        user_id = map(lambda commite:f'{commite.user.id}',commitee.member.all())
+        user_id =list(user_id)
+        novu.sub_user_to_topic(name=commitee.name,user_ids=user_id)

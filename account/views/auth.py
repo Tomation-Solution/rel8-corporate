@@ -1,4 +1,5 @@
 import json
+from utils.notification import NovuProvider
 from account.task import regiter_user_to_chat,charge_new_member_dues__fornimn
 from mymailing import tasks as mymailing_task
 from rest_framework import viewsets
@@ -360,7 +361,11 @@ class ManageMemberValidation(viewsets.ViewSet):
                     acct_task.group_MAN_subSector_and_sector.delay(
                         exco_name,member.id,type='sub-sector'
                     )
-                
+        novu = NovuProvider()
+        novu.subscribe(
+            userID=user.id,
+            email=user.email
+        )
         return Success_response(msg="Success",data=[],status_code=status.HTTP_201_CREATED)
 
     @action(detail=False,methods=['post'])
