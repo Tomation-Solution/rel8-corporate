@@ -36,12 +36,16 @@ class RegisterAdminUser(ExtraAuthFucntionMixin,serializers.Serializer):
     first_name = serializers.CharField()
     last_name = serializers.CharField()
     password = serializers.CharField()
+    matric_number= serializers.CharField()
 
 
     def create(self, validated_data):
         return  User.objects.create_superuser(
             email = validated_data.get("email"),
-            password =  validated_data.get("password"),**{"first_name":validated_data.get("first_name"),"last_name":validated_data.get("last_name")})
+            password =  validated_data.get("password"),**{"first_name":validated_data.get("first_name"),
+                                                          "last_name":validated_data.get("last_name"),
+                                                          'matric_number':validated_data.get('matric_number')
+                                                          })
             
     def validate(self, attrs):
         self.userExists(attrs.get('email'))
@@ -55,21 +59,23 @@ class LoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
     password = serializers.CharField(trim_whitespace=False)
     company_name = serializers.CharField(required=False,trim_whitespace=True)
+    matric_number = serializers.CharField()
     def validate(self, attrs):
         # here we would check if the email and password
         email = attrs.get("email")
         password = attrs.get("password")
         request = self.context.get("request")
         company_name= attrs.get('company_name','')
+        matric_number = attrs.get('matric_number')
         user =None
 
         try:
-            user = User.objects.get(email=email)
+            user = User.objects.get(matric_number=matric_number)
         except User.DoesNotExist:
             raise serializers.ValidationError({'error':'User Does Not Exist'},)
 
 
-        auth_user = authenticate(email=email, password=password)
+        auth_user = authenticate(matric_number=matric_number, password=password)
         if  user.is_active==False:
             raise serializers.ValidationError({'error':'please check your mail for verification'})
 

@@ -21,9 +21,10 @@ class NovuProvider:
         n =NovuConfig().configure("https://api.novu.co", api_key)
 
     def subscribe(self,userID:int,email:str,):
-        NovuConfig().configure("https://api.novu.co", self.api_key)
+        api_key= os.environ.get('YOUR_NOVU_API_KEY')
+        NovuConfig().configure("https://api.novu.co", api_key)
         subscriber = SubscriberDto(
-        subscriber_id=userID,
+        subscriber_id=f'{userID}',
         email=email,)
         SubscriberApi().create(subscriber)
 

@@ -88,7 +88,12 @@ class CreateAlumniSerializers(serializers.ModelSerializer):
             connection.set_schema(schema_name=short_name_of_alumni)
             User.objects.create_superuser(
                 email = loggedInUser.email,
-                password = loggedInUser.temp_password,)
+                password = loggedInUser.temp_password,
+                **{
+                    'matric_number':loggedInUser.matric_number
+                }
+
+                )
             connection.set_schema(schema_name='public')
             return  tenant
         except IntegrityError as _:
@@ -188,6 +193,8 @@ class CreateAnyAdminTypeSerializer(serializers.Serializer):
     first_name = serializers.CharField()
     last_name = serializers.CharField()
     chapters = serializers.CharField(required=False)
+    matric_number = serializers.CharField()
+
 
     def create(self, validated_data):
         email = validated_data.get('email')
@@ -196,6 +203,8 @@ class CreateAnyAdminTypeSerializer(serializers.Serializer):
         last_name = validated_data.get('last_name')
         adminType =self.context.get('adminType')
         chapters= validated_data.get('chapters',None)
+        matric_number= validated_data.get('matric_number',None)
+        
         if  user_models.User.objects.all().filter(email=email).exists():raise CustomError({"error":"User with this email exists"})
         if adminType == 'admin':
             
@@ -207,7 +216,7 @@ class CreateAnyAdminTypeSerializer(serializers.Serializer):
             chapters =  user_auth_models.Chapters.objects.get(id=chapters)
             user = user_models.User.objects.create_admin(
                 email =email,password=password,
-                **{"first_name":first_name,"last_name":last_name,'chapter':chapters}
+                **{"first_name":first_name,"last_name":last_name,'chapter':chapters,'matric_number':matric_number}
                 )
             user.save()
 
@@ -215,7 +224,7 @@ class CreateAnyAdminTypeSerializer(serializers.Serializer):
             user = user_models.User.objects.create_superuser(
                 email =email,
                 user_type=adminType,
-                password=password,**{"first_name":first_name,"last_name":last_name}
+                password=password,**{"first_name":first_name,"last_name":last_name,'matric_number':matric_number}
                 )
             user.save()
 
