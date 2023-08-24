@@ -12,7 +12,9 @@ from django.db.models import Q
 class MyUserManager(BaseUserManager):
     "this class helps manage the Custom user Model"
     def create_user(self,email,user_type,
-    password=None,) -> "User":
+    password=None,matric_number=None) -> "User":
+        if matric_number is None:
+            raise ValueError('Matric Number Is Missing')
         if not password:
             raise ValueError("Password is missing")
 
@@ -20,7 +22,8 @@ class MyUserManager(BaseUserManager):
             raise ValueError('Users must have an email address')
         
         user = self.model(
-            email=self.normalize_email(email)
+            email=self.normalize_email(email),
+            matric_number= matric_number
         )
         user.set_password(password)
         # if connection.schema_name=='public':
@@ -32,14 +35,8 @@ class MyUserManager(BaseUserManager):
 
 
     def create_superuser(self,email,password=None,**super_user):
-
-        print(super_user)
-        # if(not super_user.get("first_name")):
-        #     raise ValueError("First Name is Missing")
-
-        # if(not super_user.get("last_name")):
-        #     raise ValueError("Last Name is Missing")
-        user =self.create_user(email=email,password=password,user_type="super_admin")
+        matric_number = super_user.get('matric_number')
+        user =self.create_user(email=email,password=password,user_type="super_admin",matric_number=matric_number)
         user.is_admin =True
         user.is_superuser=True
         user.is_staff =True
@@ -92,13 +89,14 @@ class User(AbstractBaseUser,PermissionsMixin,):
     is_prospective_Member=  models.BooleanField(default=False)
     user_type = models.CharField(choices=UserType.choices,max_length=25)
     is_superuser = models.BooleanField(default=False)
+    matric_number = models.CharField(max_length=15,unique=True,default='')
     # any user that is in the app must belong to a distric 
     # chapter = models.ForeignKey(auth_related_models.Chapters,on_delete=models.SET_NULL,null=True)
     # chapter = models.OneToOneField(auth_related_models.Chapters,on_delete=models.SET_NULL)
     # temp_password is use to save the owner password tempoary when he sign up but
     #  the moment he creates a alumni organization we would use his details to create an account in his alumni org and set him to super user
     temp_password = models.TextField(null=True)
-    USERNAME_FIELD = 'email'
+    USERNAME_FIELD = 'matric_number'
     REQUIRED_FIELDS = []
 
 

@@ -321,7 +321,7 @@ class ManageMemberValidation(viewsets.ViewSet):
             email=email,
             user_type='members',
             password =password,
-            
+            matric_number=MEMBERSHIP_NO
         )
         if chapter_instance:
             "we going to add chapters if there is"

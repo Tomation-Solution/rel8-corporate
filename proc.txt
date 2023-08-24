@@ -2,6 +2,7 @@ This is where i just save stuff nothing much here
 
 worker_1: celery -A rel8 worker -l INFO
 worker_2: celery -A rel8 beat -l INFO --scheduler django_celery_beat.schedulers:DatabaseScheduler
+https://music.youtube.com/watch?v=Rs1HqzgM-q8&list=RDTMAK5uy_lz2owBgwWf1mjzyn_NbxzMViQzIg8IAIg
 
 
 #for windows development (this works only for windows marchine hould not be use for production)

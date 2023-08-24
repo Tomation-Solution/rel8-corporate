@@ -21,13 +21,15 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         email =os.environ['admin_email']
         password =os.environ['admin_password']
+        admin_matric = os.environ['admin_matric']
         if not User.objects.filter(email=email).exists():
             
             user = User.objects.create_superuser(
                 email=email,
                 password=password,
                 first_name='a lovely stuff',
-                last_name='Kind OF'
+                last_name='Kind OF',
+                matric_number=admin_matric
             )
             
             self.stdout.write("Public Admin created successfully")
