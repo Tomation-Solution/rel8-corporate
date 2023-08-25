@@ -37,7 +37,7 @@ def activate_user(request,uidb64,token):
 
 def send_mail(subject,html_content,sender,to):
     configuration = sib_api_v3_sdk.Configuration()
-    configuration.api_key['api-key']='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'
+    configuration.api_key['api-key']=os.environ['SENDINBLUE_API_KEY']
     api_instance = sib_api_v3_sdk.TransactionalEmailsApi(sib_api_v3_sdk.ApiClient(configuration))
     send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(
         to=to,html_content=html_content,
