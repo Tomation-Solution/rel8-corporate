@@ -41,7 +41,7 @@ def send_mail(subject,html_content,sender,to):
     api_instance = sib_api_v3_sdk.TransactionalEmailsApi(sib_api_v3_sdk.ApiClient(configuration))
     send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(
         to=to,html_content=html_content,
-        sender='sequentialjobs@sequentialjobs.com', subject=subject)
+        sender=sender, subject=subject)
     try:
         api_response = api_instance.send_transac_email(send_smtp_email)
         print(api_response)
