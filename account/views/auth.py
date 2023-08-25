@@ -361,11 +361,15 @@ class ManageMemberValidation(viewsets.ViewSet):
                     acct_task.group_MAN_subSector_and_sector.delay(
                         exco_name,member.id,type='sub-sector'
                     )
-        novu = NovuProvider()
-        novu.subscribe(
+        try:
+            novu = NovuProvider()
+            novu.subscribe(
             userID=user.id,
             email=user.email
-        )
+            )
+        except:
+            pass
+        
         return Success_response(msg="Success",data=[],status_code=status.HTTP_201_CREATED)
 
     @action(detail=False,methods=['post'])
