@@ -114,6 +114,7 @@ class CreateManPropectiveMemberSerializer(serializers.ModelSerializer):
         if USER().objects.filter(email=email).exists():
             raise CustomError({'error':'user email already exists'})
         user = USER().objects.create_user(
+            matric_number=email,
             email=email,
             password=cac,
             user_type='prospective_members'

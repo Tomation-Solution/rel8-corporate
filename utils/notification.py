@@ -12,6 +12,8 @@ from novu.dto.topic import TriggerTopicDto
 
 
 class NovuProvider:
+    def make_man(self,user_id):
+        return list(map(lambda x:f'{x}__man',user_id))
 
     def __init__(self) -> None:
         self.api_key= os.environ.get('YOUR_NOVU_API_KEY')
@@ -24,7 +26,7 @@ class NovuProvider:
         api_key= os.environ.get('YOUR_NOVU_API_KEY')
         NovuConfig().configure("https://api.novu.co", api_key)
         subscriber = SubscriberDto(
-        subscriber_id=f'{userID}',
+        subscriber_id=f'{userID}__man',
         email=email,)
         SubscriberApi().create(subscriber)
 
@@ -36,7 +38,7 @@ class NovuProvider:
         })
         EventApi().trigger(
             name=name,  
-            recipients=sub_id,
+            recipients=self.make_man(sub_id),
             payload={"title":title,'content':content}
         )
 
@@ -50,7 +52,7 @@ class NovuProvider:
         self.connect()
         key = slugify(name)
         TopicApi().subscribe(key=key,
-                subscribers=user_ids)
+                subscribers=self.make_man(user_ids) )
         
     def notify_by_topic(self,topicName,title,content,workflowName='on-boarding-notification'):
         self.connect()
@@ -58,10 +60,7 @@ class NovuProvider:
         topic_key=slugify(topicName),
         type="Topic",
         )
-        print({
-            'topic':slugify(topicName),
-            'workflow':workflowName
-        })
+
         EventApi().trigger_topic(
         name=workflowName,  # The trigger ID of the workflow. It can be found on the workflow page.
         topics=topics,

@@ -138,6 +138,7 @@ class AdminManageManProspectiveMemberViewSet(viewsets.ViewSet):
         id =request.data.get('id','-1')
         content = request.data.get('content',None)
         executive_email= request.data.get('email',None)
+        password = request.data.get('password')
         if executive_email is None or content is None:
             raise CustomError(message='Please Enter Content and Email')
         profile = manrelatedPropectiveModels.ManProspectiveMemberProfile.objects.get(id=id)
@@ -145,7 +146,8 @@ class AdminManageManProspectiveMemberViewSet(viewsets.ViewSet):
         profile.executive_email = executive_email
         profile.application_status='inspection_of_factory_inspection'
         profile.save()
-        sendAcknowledgementOfApplication.delay(profile.id,content)
+        print({"executive password: ":password})
+        sendAcknowledgementOfApplication.delay(profile.id,content,password)
         return Success_response('Success')
     @action(detail=False,methods=['post'])
     def factory_inspection(self,request,*args,**kwargs):

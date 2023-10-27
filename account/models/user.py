@@ -89,7 +89,7 @@ class User(AbstractBaseUser,PermissionsMixin,):
     is_prospective_Member=  models.BooleanField(default=False)
     user_type = models.CharField(choices=UserType.choices,max_length=25)
     is_superuser = models.BooleanField(default=False)
-    matric_number = models.CharField(max_length=15,unique=True,default='')
+    matric_number = models.CharField(max_length=1000,unique=True,default='')
     # any user that is in the app must belong to a distric 
     # chapter = models.ForeignKey(auth_related_models.Chapters,on_delete=models.SET_NULL,null=True)
     # chapter = models.OneToOneField(auth_related_models.Chapters,on_delete=models.SET_NULL)

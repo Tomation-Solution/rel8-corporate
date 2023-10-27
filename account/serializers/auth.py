@@ -59,15 +59,18 @@ class LoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
     password = serializers.CharField(trim_whitespace=False)
     company_name = serializers.CharField(required=False,trim_whitespace=True)
-    matric_number = serializers.CharField()
+    matric_number = serializers.CharField(required=False,trim_whitespace=True)
     def validate(self, attrs):
         # here we would check if the email and password
         email = attrs.get("email")
         password = attrs.get("password")
         request = self.context.get("request")
         company_name= attrs.get('company_name','')
-        matric_number = attrs.get('matric_number')
+        matric_number = attrs.get('matric_number',None)
         user =None
+        if matric_number is  None:
+            matric_number = email
+
 
         try:
             user = User.objects.get(matric_number=matric_number)

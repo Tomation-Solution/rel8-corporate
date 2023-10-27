@@ -104,7 +104,7 @@ def sendMeetingInvitationMail(user,meeting:meeting_models.Meeting,meeting_proxy_
 
 
 @shared_task()
-def sendAcknowledgementOfApplication(propectiveID,content):
+def sendAcknowledgementOfApplication(propectiveID,content,password='manweb'):
     profile = man_prospective_model.ManProspectiveMemberProfile.objects.get(id=propectiveID)
     
 
@@ -116,7 +116,9 @@ def sendAcknowledgementOfApplication(propectiveID,content):
         'short_name':connection.schema_name,
         'name_of_company':profile.name_of_company,
         'breakdown':breakdown,
-        'content':content
+        'content':content,
+        'password':'password',
+        'email':profile.user.email
         }
     mail_subject = f'MAN Acknowledgement Of Application'
     message = render_to_string('acknowledgement_of_application.html',context=data)

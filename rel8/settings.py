@@ -301,6 +301,7 @@ CORS_ALLOWED_ORIGINS = [
 "http://localhost:3000",
 "http://localhost:3006",
 "http://localhost:5500",
+"http://localhost:8080",
 'https://spectacular-beignet-868060.netlify.app',
 'https://fancy-dragon-bad276.netlify.app',
 'http://members.nimn.com.ng',
