@@ -296,51 +296,7 @@ sentry_sdk.init(
 
 
 
-CORS_ALLOWED_ORIGINS = [
-# 'ws://localhost:6000',
-"http://localhost:3000",
-"http://localhost:3006",
-"http://localhost:5500",
-"http://localhost:8080",
-'https://spectacular-beignet-868060.netlify.app',
-'https://fancy-dragon-bad276.netlify.app',
-'http://members.nimn.com.ng',
-'https://members.nimn.com.ng',
-'https://dreamy-khapse-def01b.netlify.app',
-# "http://localhost:8000",
-# 'https://guileless-stroopwafel-666090.netlify.app'
-'https://cool-liger-caec7e.netlify.app',
-'http://cool-liger-caec7e.netlify.app',
-'https://nimn-frontend-production.up.railway.app',
-'http://nimn-frontend-production.up.railway.app',
-'http://rela8.tech',
-'https://rela8.tech',
-'https://www.rela8.tech',
-'https://www.rela8.tech',
-'https://rel8-man-production.up.railway.app',
-'http://rel8-man-production.up.railway.app',
-'https://rel8admin-production.up.railway.app',
-'http://rel8admin-production.up.railway.app',
-'http://man.rel8membership.com',
-'https://man.rel8membership.com',
-'http://www.rel8membership.com',
-'https://www.rel8membership.com',
-'https://rel8membership.com',
-'http://rel8membership.com',
-'https://man-new-test-site.netlify.app',
-'https://www.members.nimn.com.ng',
-'http://www.members.nimn.com.ng',
-'http://anni.up.railway.app',
-'https://anni.up.railway.app',
-'https://anni.up.railway.app',
-'https://man-new-test-site.netlify.app',
-'https://rel8admin-production-3c7d.up.railway.app',
-'https://rel8manversion-production-29b5.up.railway.app',
-'https://www.manufacturersnigeria.org',
-'http://www.manufacturersnigeria.org',
-'https://manufacturersnigeria.org',
-'http://manufacturersnigeria.org',
-]
+CORS_ALLOWED_ORIGINS = os.environ['allowed_hosts'].split(',')
 if os.environ.get('databaseName',None):
     CORS_ALLOWED_ORIGINS.append('http://localhost:3000')
 
