@@ -12,6 +12,9 @@ router.register("AdminRelatedViews",user_view.AdminRelatedViews,basename='AdminR
 router.register('memberlist-info',user_view.MemberListInfo,basename="memberlist-info")
 router.register('member-bio',user_view.MemberBioViewSet,basename='member-bio')
 router.register('admin-update-member-info',user_view.AdminUpdateMemberInfoViewSet,basename='admin-update-member-info')
+router.register('forgot-password',user_view.ForgotPasswordViewSet,basename='forgot-password')
+
+
 urlpatterns = [
     path('profile/',user_view.profile,name='profile'),
     path('council_members/<int:pk>/',user_view.council_members,name='council_members'),

@@ -20,6 +20,8 @@ from rest_framework.parsers import FormParser
 from django.db.models import F
 from utils.custom_parsers import NestedMultipartParser
 from django.shortcuts import get_object_or_404
+from rest_framework.permissions import AllowAny
+
 # from
 
 class RegisterUserToChapter(viewsets.ViewSet):
@@ -322,3 +324,25 @@ class AdminUpdateMemberInfoViewSet(viewsets.ModelViewSet):
         serailzer_dat.is_valid(raise_exception=True)
         serailzer_dat.save()
         return custom_response.Success_response(msg='Upadated',data=[],status_code=status.HTTP_200_OK)
+
+
+
+
+
+class ForgotPasswordViewSet(viewsets.ViewSet):
+    permission_classes=[AllowAny]
+
+    @action(methods=['post'],detail=False,permission_classes=[AllowAny])
+    def request_password_change(self,request,*args,**kwargs):
+        print({'d':request.data})
+        serialzier= user_serializer.PasswordResetRequestSerializer(data=request.data,context={'request':request})
+        serialzier.is_valid(raise_exception=True)
+        serialzier.save()
+        return custom_response.Success_response('Forgot password link sent to your mail!')
+    
+    @action(methods=['post'],detail=False,permission_classes=[AllowAny])
+    def rest_password(self,request,*args,**kwargs):
+        serialzier =user_serializer.PasswordResetConfirmationSerializer(data=request.data,context={'request':request})
+        serialzier.is_valid(raise_exception=True)
+        serialzier.save()
+        return custom_response.Success_response('Password Rest Successfully')
