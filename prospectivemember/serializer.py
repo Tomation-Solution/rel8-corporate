@@ -64,6 +64,7 @@ class CreateManPropectiveMemberSerializer(serializers.ModelSerializer):
                 instance.paystack_key= data['data']['reference']
                 instance.save()
                 return data
+            print(resp)
 
 
         if payment_type == 'flutterwave':
