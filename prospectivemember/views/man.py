@@ -14,6 +14,7 @@ from  rest_framework.response import Response
 from mymailing.tasks import sendRemarkNotification
 from mymailing.EmailConfirmation import sendAcknowledgementOfApplication
 from django.shortcuts import get_object_or_404
+import threading
 class CreateManPropectiveMemberViewset(viewsets.ViewSet):
     serializer_class = serializer.CreateManPropectiveMemberSerializer
 
@@ -123,9 +124,10 @@ class AdminManageManProspectiveMemberViewSet(viewsets.ViewSet):
         if status is not None:
             profile.application_status=status
         if remark is not None:
-            sendRemarkNotification.delay(
-                to_email=profile.user.email,remark=remark
-            )
+            thread = threading.Thread(target=sendRemarkNotification,args=[profile.user.email,remark])
+            thread.start()
+            thread.join()
+
             profile.admin=remark
         profile.save()
         message=f'profile status has been changed to "{status}"'
@@ -146,8 +148,10 @@ class AdminManageManProspectiveMemberViewSet(viewsets.ViewSet):
         profile.executive_email = executive_email
         profile.application_status='inspection_of_factory_inspection'
         profile.save()
-        print({"executive password: ":password})
-        sendAcknowledgementOfApplication.delay(profile.id,content,password)
+        thread = threading.Thread(target=sendAcknowledgementOfApplication,args=[profile.id,content,password])
+        thread.start()
+        thread.join()
+
         return Success_response('Success')
     @action(detail=False,methods=['post'])
     def factory_inspection(self,request,*args,**kwargs):

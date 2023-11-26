@@ -7,7 +7,7 @@ from django.contrib.auth import get_user_model
 from ..models import user as user_models
 from account.models import auth as  user_auth_models
 from django.shortcuts import get_object_or_404
-import os
+import os,threading
 from account.serializers import user as user_related_serializer
 from django.utils.encoding import force_str,force_bytes
 from django.utils.http import urlsafe_base64_encode,urlsafe_base64_decode
@@ -498,8 +498,7 @@ class PasswordResetRequestSerializer(serializers.Serializer):
         uid=urlsafe_base64_encode(force_bytes(user.pk))
         token = default_token_generator.make_token(user)
         reset_url = f"https://{connection.schema_name}.rel8membership.com/reset-password/{uid}/{token}/"
-    
-        send_forgot_password_mail.delay(user.email,reset_url)
+        thread = threading.Thread(target=send_forgot_password_mail,args=[user.email,reset_url])
         # print({'reset_url':reset_url})
     def create(self, validated_data):
         user = get_user_model().objects.get(email=validated_data.get('email'))

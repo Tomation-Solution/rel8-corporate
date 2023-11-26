@@ -8,7 +8,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
 from .. import models
 from event import models as event_models
-import requests,json
+import requests,json,threading
 from rest_framework.views import APIView
 from utils import permissions as custom_permissions
 from utils.usefulFunc import convert_naira_to_kobo
@@ -485,7 +485,10 @@ def webhookPayloadHandler(meta_data,user):
                 prospective_member.has_paid=True
                 prospective_member.amount=float(amount_to_be_paid)
                 prospective_member.save()
-                mymailing_task.send_activation_mail.delay(prospective_member.user.id,prospective_member.user.email)
+                thread = threading.Thread(target=mymailing_task.send_activation_mail,args=[prospective_member.user.id,prospective_member.user.email])
+                thread.start()
+                thread.join()
+
             else:
                 prospective_member= generalProspectiveModels.ProspectiveMemberProfile.objects.get(id=instanceID)
                 prospective_member.has_paid=True
@@ -503,12 +506,15 @@ def webhookPayloadHandler(meta_data,user):
                 prospective_member.save()
         if meta_data['forWhat'] =='paid_publication':
             publication= Publication.objects.get(id=meta_data['instanceID'])
-                     
-            mymailing_task.send_publication_downloadlink.delay(
-                link=publication.danload.url,
-                email=user.email,
-                title=publication.name
-            )
+            thread = threading.Thread(
+                target=mymailing_task.send_publication_downloadlink,
+                args=[
+                     publication.danload.url,user.email,
+                    publication.name
+                ]
+                )
+            thread.start()
+            thread.join()
         return HttpResponse(status.HTTP_200_OK)
 
 

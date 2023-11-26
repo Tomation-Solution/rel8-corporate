@@ -6,7 +6,7 @@ from ..models import auth as auth_models
 from .. models import user as user_models
 from account.serializers import user as user_related_serializer
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
-import json
+import json,threading
 from utils.custom_exceptions import CustomError
 from django.db import connection
 from account.task import regiter_user_to_chat,charge_new_member_dues__fornimn
@@ -178,20 +178,22 @@ class UploadAndCreateMembersSerializer(serializers.Serializer):
                     name= key,
                     value= userDBData[key],
                     member=member
-                )   
-        charge_new_member_dues__fornimn.delay(user.id)
+                )  
+        thread = threading.Thread(target=charge_new_member_dues__fornimn,args=(user.id))
+        thread.start()
+        thread.join()
         if connection.schema_name == 'man':
             for key in userDBData.keys():
                 if key == 'SECTOR':
                     exco_name = userDBData[key]
-                    acct_task.group_MAN_subSector_and_sector.delay(
-                        exco_name,member.id,type='sector'
-                    )
+                    thread = threading.Thread(target=acct_task.group_MAN_subSector_and_sector,args=[exco_name,member.id,'sector'])
+                    thread.start()
+                    thread.join()
                 if key == 'SUB-SECTOR':
                     exco_name = userDBData[key]
-                    acct_task.group_MAN_subSector_and_sector.delay(
-                        exco_name,member.id,type='sub-sector'
-                    )
+                    thread = threading.Thread(target=acct_task.group_MAN_subSector_and_sector,args=[exco_name,member.id,'sub-sector'])
+                    thread.start()
+                    thread.join()
 
         return dict()
 

@@ -9,12 +9,12 @@ from mymailing.views import send_mail
 from django.db import connection
 import os
 
-@shared_task()
+# @shared_task()
 def send_activation_mail(user_id,to_email):
     user = get_user_model().objects.get(id=user_id)
     activateEmail(user,to_email)
 
-@shared_task()
+# @shared_task()
 def send_event_invitation_mail(user_id,event_id,event_proxy_attendies_id):
     user = get_user_model().objects.get(id=user_id)
     event =Event.objects.get(id=event_id)
@@ -26,7 +26,7 @@ def send_event_invitation_mail(user_id,event_id,event_proxy_attendies_id):
     )
 
 
-@shared_task
+# @shared_task
 def send_publication_downloadlink(link,email,title):
      sendPublicationMailApi(link,email,title)
 

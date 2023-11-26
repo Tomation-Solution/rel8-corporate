@@ -1,4 +1,4 @@
-import json
+import json,threading
 from utils.notification import NovuProvider
 from account.task import regiter_user_to_chat,charge_new_member_dues__fornimn
 from mymailing import tasks as mymailing_task
@@ -8,7 +8,7 @@ from rest_framework.response import Response
 from django.contrib.auth import get_user_model
 from rest_framework.generics import CreateAPIView,UpdateAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
-from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
+from rest_framework.parsers import  FormParser
 from django.db import connection
 from utils.custom_exceptions import CustomError
 from utils.custom_response import Success_response
@@ -344,23 +344,28 @@ class ManageMemberValidation(viewsets.ViewSet):
                     value= userDBData[key],
                     member=member
                 )
-        mymailing_task.send_activation_mail.delay(user.id,user.email)
+        thread = threading.Thread(target=mymailing_task.send_activation_mail,args=[user.id,user.email])
+        thread.start()
+        thread.join()
+        
         # regiter_user_to_chat.delay(member.id)
         # if connection.schema_name == 'nimn':
         "this is not for nimn specific any more view the function for more info"
-        charge_new_member_dues__fornimn.delay(user.id)
+        thread = threading.Thread(target=charge_new_member_dues__fornimn,args=(user.id))
+        thread.start()
+        thread.join()
         if connection.schema_name == 'man':
             for key in userDBData.keys():
                 if key == 'SECTOR':
                     exco_name = userDBData[key]
-                    acct_task.group_MAN_subSector_and_sector.delay(
-                        exco_name,member.id,type='sector'
-                    )
+                    thread = threading.Thread(target=acct_task.group_MAN_subSector_and_sector,args=[exco_name,member.id,'sector'])
+                    thread.start()
+                    thread.join()
                 if key == 'SUB-SECTOR':
                     exco_name = userDBData[key]
-                    acct_task.group_MAN_subSector_and_sector.delay(
-                        exco_name,member.id,type='sub-sector'
-                    )
+                    thread = threading.Thread(target=acct_task.group_MAN_subSector_and_sector,args=(exco_name,member.id,'sub-sector'))
+                    thread.start()
+                    thread.join()
         try:
             novu = NovuProvider()
             novu.subscribe(

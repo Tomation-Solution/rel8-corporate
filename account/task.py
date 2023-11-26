@@ -193,7 +193,7 @@ def update_commitee_chat(commitee_id:int):
 
 
 
-@shared_task
+# @shared_task
 def charge_new_member_dues__fornimn(user_id:int):
      'This Charge Members on Manul Dues .. this does not work for ont nimn but for org that have membership_grade'
      all_mannual =  due_models.Due.objects.filter(is_on_create=True)
@@ -227,7 +227,7 @@ def charge_new_member_dues__fornimn(user_id:int):
 
 
 
-@shared_task
+# @sha  red_task
 def group_MAN_subSector_and_sector(exco_name,member_id,type='sector',):
     try:
         member = user_related_models.Memeber.objects.get(id=member_id)
@@ -238,7 +238,7 @@ def group_MAN_subSector_and_sector(exco_name,member_id,type='sector',):
     except:pass
 
 
-@shared_task()
+# @shared_task()
 def send_forgot_password_mail(email,link):
     'send forgot password notifcation'
     mail_subject =f'{connection.schema_name.upper()} Forgot Password'
