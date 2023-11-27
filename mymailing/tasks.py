@@ -11,11 +11,15 @@ import os
 
 # @shared_task()
 def send_activation_mail(user_id,to_email):
+    connection.set_schema(schema_name='man')
+    
     user = get_user_model().objects.get(id=user_id)
     activateEmail(user,to_email)
 
 # @shared_task()
 def send_event_invitation_mail(user_id,event_id,event_proxy_attendies_id):
+    connection.set_schema(schema_name='man')
+
     user = get_user_model().objects.get(id=user_id)
     event =Event.objects.get(id=event_id)
     event_proxy_attendies= EventProxyAttendies.objects.get(id=event_proxy_attendies_id)
@@ -28,11 +32,14 @@ def send_event_invitation_mail(user_id,event_id,event_proxy_attendies_id):
 
 # @shared_task
 def send_publication_downloadlink(link,email,title):
-     sendPublicationMailApi(link,email,title)
+    connection.set_schema(schema_name='man') 
+    sendPublicationMailApi(link,email,title)
 
 
-@shared_task
+# @shared_task
 def sendRemarkNotification(to_email,remark):
+    connection.set_schema(schema_name='man') 
+    
     message = render_to_string('prospective_remark_body.html',context={
         'remark':remark
     })
