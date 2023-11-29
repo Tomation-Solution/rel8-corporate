@@ -344,14 +344,14 @@ class ManageMemberValidation(viewsets.ViewSet):
                     value= userDBData[key],
                     member=member
                 )
-        thread = threading.Thread(target=mymailing_task.send_activation_mail,args=[user.id,user.email])
+        thread = threading.Thread(target=mymailing_task.send_activation_mail,args=[user.id,user.email,])
         thread.start()
         thread.join()
         
         # regiter_user_to_chat.delay(member.id)
         # if connection.schema_name == 'nimn':
         "this is not for nimn specific any more view the function for more info"
-        thread = threading.Thread(target=charge_new_member_dues__fornimn,args=(user.id))
+        thread = threading.Thread(target=charge_new_member_dues__fornimn,args=[user.id,'man'])
         thread.start()
         thread.join()
         if connection.schema_name == 'man':

@@ -498,7 +498,7 @@ class PasswordResetRequestSerializer(serializers.Serializer):
         uid=urlsafe_base64_encode(force_bytes(user.pk))
         token = default_token_generator.make_token(user)
         reset_url = f"https://{connection.schema_name}.rel8membership.com/reset-password/{uid}/{token}/"
-        thread = threading.Thread(target=send_forgot_password_mail,args=[user.email,reset_url])
+        thread = threading.Thread(target=send_forgot_password_mail,args=[user.email,reset_url,connection.schema_name])
         # print({'reset_url':reset_url})
     def create(self, validated_data):
         user = get_user_model().objects.get(email=validated_data.get('email'))

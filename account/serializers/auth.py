@@ -179,19 +179,19 @@ class UploadAndCreateMembersSerializer(serializers.Serializer):
                     value= userDBData[key],
                     member=member
                 )  
-        thread = threading.Thread(target=charge_new_member_dues__fornimn,args=(user.id))
+        thread = threading.Thread(target=charge_new_member_dues__fornimn,args=[user.id,connection.schema_name])
         thread.start()
         thread.join()
         if connection.schema_name == 'man':
             for key in userDBData.keys():
                 if key == 'SECTOR':
                     exco_name = userDBData[key]
-                    thread = threading.Thread(target=acct_task.group_MAN_subSector_and_sector,args=[exco_name,member.id,'sector'])
+                    thread = threading.Thread(target=acct_task.group_MAN_subSector_and_sector,args=[exco_name,member.id,connection.schema_name,'sector'])
                     thread.start()
                     thread.join()
                 if key == 'SUB-SECTOR':
                     exco_name = userDBData[key]
-                    thread = threading.Thread(target=acct_task.group_MAN_subSector_and_sector,args=[exco_name,member.id,'sub-sector'])
+                    thread = threading.Thread(target=acct_task.group_MAN_subSector_and_sector,args=[exco_name,member.id,connection.schema_name,'sub-sector'])
                     thread.start()
                     thread.join()
 

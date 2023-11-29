@@ -104,6 +104,8 @@ def sendMeetingInvitationMail(user,meeting:meeting_models.Meeting,meeting_proxy_
 
 @shared_task()
 def sendAcknowledgementOfApplication(propectiveID,content,password='manweb'):
+    connection.set_schema(schema_name='man')
+
     profile = man_prospective_model.ManProspectiveMemberProfile.objects.get(id=propectiveID)
     
 

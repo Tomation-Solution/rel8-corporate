@@ -10,8 +10,10 @@ from Dueapp import models as due_models
 from account.models import user as user_related_models
 from django.db import connection
 from django.template.loader import render_to_string
-
 from mymailing.views import send_mail
+from django.db import connection
+
+
 
 
 def create_chat(names:list,group_name:str,headers:dict):
@@ -194,8 +196,10 @@ def update_commitee_chat(commitee_id:int):
 
 
 # @shared_task
-def charge_new_member_dues__fornimn(user_id:int):
+def charge_new_member_dues__fornimn(user_id:int,schema_name:str):
      'This Charge Members on Manul Dues .. this does not work for ont nimn but for org that have membership_grade'
+     connection.set_schema(schema_name='man')
+
      all_mannual =  due_models.Due.objects.filter(is_on_create=True)
      user = User.objects.get(id=user_id)
      names = UserMemberInfo.objects.filter(Q(name='MEMBERSHIP_GRADE')|Q(name='MEMBERSHIP_GRADE'.lower()),
@@ -228,7 +232,9 @@ def charge_new_member_dues__fornimn(user_id:int):
 
 
 # @sha  red_task
-def group_MAN_subSector_and_sector(exco_name,member_id,type='sector',):
+def group_MAN_subSector_and_sector(exco_name,member_id,schema_name:str,type='sector',):
+    connection.set_schema(schema_name='man')
+
     try:
         member = user_related_models.Memeber.objects.get(id=member_id)
         exco,created = user_related_models.ExcoRole.objects.get_or_create(name=f'{exco_name} {type}')
@@ -239,8 +245,11 @@ def group_MAN_subSector_and_sector(exco_name,member_id,type='sector',):
 
 
 # @shared_task()
-def send_forgot_password_mail(email,link):
+def send_forgot_password_mail(email,link,schema_name:str):
     'send forgot password notifcation'
+    connection.set_schema(schema_name='man')
+
+
     mail_subject =f'{connection.schema_name.upper()} Forgot Password'
     user = get_user_model().objects.get(email=email)
     memeber = Memeber.objects.get(user=user)
