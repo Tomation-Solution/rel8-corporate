@@ -15,6 +15,7 @@ class NovuProvider:
     def make_man(self,user_id):
         return list(map(lambda x:f'{x}__man',user_id))
 
+
     def __init__(self) -> None:
         self.api_key= os.environ.get('YOUR_NOVU_API_KEY')
 
