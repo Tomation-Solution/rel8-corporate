@@ -21,6 +21,7 @@ class ChatRoomConsumer(AsyncWebsocketConsumer):
         self.room_group_name = self.room_name
         self.tenant = self.scope['url_route']['kwargs']['tenant_name']
         self.user_full_name =None
+        connection.set_schema(schema_name=self.tenant)
         await self.channel_layer.group_add(
             self.room_group_name,
             self.channel_name
@@ -149,6 +150,7 @@ class ChatRoomConsumer(AsyncWebsocketConsumer):
 class CommiteeChatRoomConsumer(AsyncWebsocketConsumer):
 
     async def connect(self):
+        connection.set_schema(schema_name=self.tenant)
         self.commitee_id = self.scope['url_route']['kwargs']['commitee_id']
         self.room_group_name= self.commitee_id
         self.tenant = self.scope['url_route']['kwargs']['tenant_name']
@@ -166,6 +168,8 @@ class CommiteeChatRoomConsumer(AsyncWebsocketConsumer):
         )
     
     async def receive(self, text_data=None, bytes_data=None):
+        connection.set_schema(schema_name=self.tenant)
+
         text_data_json = json.loads(text_data)
         message = text_data_json['message']
         send_user_id = text_data_json['send_user_id']
@@ -187,7 +191,7 @@ class CommiteeChatRoomConsumer(AsyncWebsocketConsumer):
     @sync_to_async
     def validate_user(self,send_user_id):
         'this validation first check it the user exist and checks if he is a member and then check if he exists in the commitee'
-        connection.set_schema(schema_name=self.tenant)
+        connection.set_schema(schema_name='man')
         if not get_user_model().objects.filter(id=send_user_id).exists():
             print('does not exist')
             raise CustomError(
@@ -210,6 +214,7 @@ class CommiteeChatRoomConsumer(AsyncWebsocketConsumer):
 
     @sync_to_async
     def fill_user_name(self,send_user_id:int):
+        connection.set_schema(schema_name='man')
         user =get_user_model().objects.get(id=send_user_id)
         if user.user_type== 'members':
             user_full_name = user.memeber.full_name
@@ -223,7 +228,7 @@ class CommiteeChatRoomConsumer(AsyncWebsocketConsumer):
     @sync_to_async
     def create_chat(self,send_user_id,message):
         "we get or create a group name"
-        connection.set_schema(schema_name=self.tenant)
+        connection.set_schema(schema_name='man')
         chat_room ,created=  models.ChatRoom.objects.get_or_create(
             room_name=self.room_group_name +'commitee'
         )
