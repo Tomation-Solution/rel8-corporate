@@ -17,7 +17,6 @@ from account.models import user as user_related_models
 
 class ChatRoomConsumer(AsyncWebsocketConsumer):
     async def connect(self):
-        logging.debug(self.tenant)
         self.room_name = self.scope['url_route']['kwargs']['room_name']
         self.room_group_name = self.room_name
         self.tenant = self.scope['url_route']['kwargs']['tenant_name']
