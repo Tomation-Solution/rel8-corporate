@@ -329,13 +329,13 @@ CLOUDINARY_URL = os.environ["CLOUDINARY_URL"]
 DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
 ASGI_APPLICATION = "rel8.routing.application"
 
-
+print(os.environ.get('REDIS_URL'))
 if os.environ.get('REDIS_URL'):
     CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
-            "hosts": [os.environ['REDIS_URL']],
+            "hosts": [('137.184.240.109',6381)],
         },
     },
     }
