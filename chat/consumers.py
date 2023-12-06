@@ -1,4 +1,4 @@
-import json
+import json,logging
 from channels.generic.websocket import AsyncWebsocketConsumer
 from django.db import connection
 
@@ -17,11 +17,12 @@ from account.models import user as user_related_models
 
 class ChatRoomConsumer(AsyncWebsocketConsumer):
     async def connect(self):
+        logging.debug(self.tenant)
         self.room_name = self.scope['url_route']['kwargs']['room_name']
         self.room_group_name = self.room_name
         self.tenant = self.scope['url_route']['kwargs']['tenant_name']
         self.user_full_name =None
-        connection.set_schema(schema_name=self.tenant)
+        connection.set_schema(schema_name='man')
         await self.channel_layer.group_add(
             self.room_group_name,
             self.channel_name
@@ -74,7 +75,7 @@ class ChatRoomConsumer(AsyncWebsocketConsumer):
         send_user_id = text_data_json['send_user_id']
         # tenant_name
         # print({'schema anme':connection.schema_name})
-        print({'schema anme':self.tenant })
+        logging.debug({'schema anme':self.tenant })
         "here we setting the schema using the short name tha was sent from the front end"
         
         # firstuserid,seconduserid = self.room_name.splite('and') 
@@ -93,11 +94,12 @@ class ChatRoomConsumer(AsyncWebsocketConsumer):
 
     @sync_to_async
     def validate_user(self,send_user_id):
-        connection.set_schema(schema_name=self.tenant)
+        connection.set_schema(schema_name='man')
         "check if user id exist in the data base"
-        print({'send_user_id':send_user_id})
+        
+        logging.debug({'send_user_id':send_user_id})
         if not get_user_model().objects.filter(id=send_user_id).exists():
-            print('does not exist')
+            logging.debug('does not exist')
             raise CustomError(
             message='User does not exist',
             status_code=status.HTTP_400_BAD_REQUEST
