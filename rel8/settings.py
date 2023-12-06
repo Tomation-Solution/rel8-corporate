@@ -272,9 +272,9 @@ REST_FRAMEWORK = {
 PAYSTACK_SECRET=os.environ['PAYSTACK_SECRET']
 PAYSTACK_PUBLICKEY=os.environ['PAYSTACK_PUBLICKEY']
 
-if os.environ.get('REDIS_URL',None):
-    "if u have a redis url u can always put it in the venv...."
-    CELERY_BROKER_URL =os.environ.get('REDIS_URL')
+# if os.environ.get('REDIS_URL',None):
+#     "if u have a redis url u can always put it in the venv...."
+#     CELERY_BROKER_URL =os.environ.get('REDIS_URL')
 
 
 sentry_sdk.init(
