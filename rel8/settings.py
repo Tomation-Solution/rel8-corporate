@@ -122,6 +122,7 @@ TENANT_APPS = (
      'services',
 'prospectivemember',
 'membershipservice',
+'customservices',
     # my apps
 
 )

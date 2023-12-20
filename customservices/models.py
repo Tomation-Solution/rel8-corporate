@@ -27,7 +27,7 @@ class Rel8CustomMemberServiceRequests(models.Model):
     custom_service  = models.ForeignKey(Rel8CustomServices,on_delete=models.CASCADE)
     amount =models.DecimalField(decimal_places=4,max_digits=19,default=0.00)
     paystack_key = models.TextField()
-    member = models.ForeignKey(Memeber,on_delete=models.CASCADE)
+    member = models.ForeignKey(Memeber,on_delete=models.CASCADE,null=True,default=None)
 
 class Rel8CustomMemberServiceRequestsText(models.Model):
     name = models.TextField()

@@ -11,7 +11,7 @@ from account.models import user as user_related_models
 from django.db import connection
 from django.template.loader import render_to_string
 from mymailing.views import send_mail
-from django.db import connection
+# from django.db import connection
 
 
 

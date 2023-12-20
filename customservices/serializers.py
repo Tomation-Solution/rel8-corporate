@@ -2,6 +2,7 @@ from rest_framework import serializers
 from customservices import models
 from django.shortcuts import get_object_or_404
 from account.models.user import Memeber
+from django.db import connection
 
 class  Rel8CustomServicesSerializer(serializers.ModelSerializer):
 
@@ -31,11 +32,16 @@ class HandleMemberServiceSubmissions(serializers.Serializer):
         custom_service = validated_data.get('custom_service',-1)
         rel8_custom_services = get_object_or_404(models.Rel8CustomServices,id= custom_service,)
         member = self.context.get('member')
+        memberInstance = Memeber.objects.get(id=member.id)
+        print(
+            {'tenant':connection.schema_name,"member":member}
+        )
         rel8_custom_member_servicerequests,created=models.Rel8CustomMemberServiceRequests.objects.get_or_create(
             custom_service=rel8_custom_services,
-            member = member,
+            member = memberInstance,
             status='pending'
         )
+        
         for field in fields_subbission:
             filed_instance,created = models.Rel8CustomMemberServiceRequestsText.objects.get_or_create(
                 customMember_service_request=rel8_custom_member_servicerequests,
