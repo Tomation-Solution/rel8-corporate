@@ -1,10 +1,10 @@
-from e_metric_api.celery import app
+# from e_metric_api.celery import app
 
 from mailing.services.mailing import MailException
 from mailing.services.send_in_blue import SendInBlue
 
 
-@app.task()
+# @app.task()
 def send_password_reset_email(sender: dict, content: str, first_name: str, recipient_email: list):
     """
     A function that sends a password reset email

@@ -80,6 +80,7 @@ SHARED_APPS = (
      'chat',
      'meeting',
      'prospectivemember',
+     'customservices',
      # you must list the app where your tenant model resides in
     #    'mailing',
 
