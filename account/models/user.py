@@ -10,69 +10,76 @@ from django.db import connection
 from django.db.models import Q
 
 class MyUserManager(BaseUserManager):
-    "this class helps manage the Custom user Model"
-    def create_user(self,email,user_type,
-    password=None,matric_number=None) -> "User":
+    """This class helps manage the Custom User Model"""
+
+    def create_user(self, email, user_type, password=None, matric_number=None):
         if matric_number is None:
             raise ValueError('Matric Number Is Missing')
         if not password:
-            raise ValueError("Password is missing")
-
+            raise ValueError('Password is missing')
         if not email:
             raise ValueError('Users must have an email address')
-        
+
+        email = self.normalize_email(email)
         user = self.model(
-            email=self.normalize_email(email),
-            matric_number= matric_number
+            email=email,
+            matric_number=matric_number
         )
         user.set_password(password)
-        # if connection.schema_name=='public':
-        # user.is_active =True
-        user.user_type=user_type
-
+        user.user_type = user_type
         user.save(using=self._db)
         return user
 
-
-    def create_superuser(self,email,password=None,**super_user):
-        matric_number = super_user.get('matric_number')
-        user =self.create_user(email=email,password=password,user_type="super_admin",matric_number=matric_number)
-        user.is_admin =True
-        user.is_superuser=True
-        user.is_staff =True
-        user.user_type="super_admin"
-        user.temp_password =password
-        user.is_active=True
-        user.save()
-        # we would use the user to create a super_admin model
-        SUPERADMIN = Super_admin.objects.create(
-            user = user,
-            first_name=super_user.get("first_name"," "),
-            last_name=super_user.get("last_name"," ")
-        )
-        SUPERADMIN.save()
-        return user
+    def create_superuser(self, email, password=None, matric_number=None, **extra_fields):
+        if matric_number is None:
+            raise ValueError('Matric Number Is Missing for Superuser')
         
+        user = self.create_user(
+            email=email,
+            password=password,
+            user_type="super_admin",
+            matric_number=matric_number
+        )
+        user.is_admin = True
+        user.is_superuser = True
+        user.is_staff = True
+        user.is_active = True
+        user.temp_password = password
+        user.save(using=self._db)
 
-    def create_admin(self,email,password=None,**admin_user):
+        # Create the Super_admin instance (if needed)
+        Super_admin.objects.create(
+            user=user,
+            first_name=extra_fields.get("first_name", " "),
+            last_name=extra_fields.get("last_name", " ")
+        )
 
-        chapter = admin_user.get('chapter',None)
-        if (chapter is None): raise CustomError({'error':'a admin needs to belong to a chapter'})
-        user =self.create_user(email=email,password=password,user_type='admin')
-        # user.is_staff =True
-        user.is_admin =True
-        user.user_type="admin"
+        return user
+
+    def create_admin(self, email, password=None, **admin_user):
+        chapter = admin_user.get('chapter', None)
+        if chapter is None:
+            raise ValueError('An admin needs to belong to a chapter')
+        
+        user = self.create_user(
+            email=email,
+            password=password,
+            user_type='admin',
+            matric_number=admin_user.get('matric_number')
+        )
+        user.is_admin = True
+        user.user_type = "admin"
         user.chapter = chapter
-        user.save()
-        admin = Admin.objects.create(
-        user = user,
-        first_name=admin_user.get("first_name"," "),
-        last_name=admin_user.get("last_name"," "),
+        user.save(using=self._db)
+
+        # Create the Admin instance
+        Admin.objects.create(
+            user=user,
+            first_name=admin_user.get("first_name", " "),
+            last_name=admin_user.get("last_name", " ")
         )
-        admin.save()
+
         return user
-        
-        
 
 class User(AbstractBaseUser,PermissionsMixin,):
     class UserType(models.TextChoices):
@@ -97,7 +104,7 @@ class User(AbstractBaseUser,PermissionsMixin,):
     #  the moment he creates a alumni organization we would use his details to create an account in his alumni org and set him to super user
     temp_password = models.TextField(null=True)
     USERNAME_FIELD = 'matric_number'
-    REQUIRED_FIELDS = []
+    REQUIRED_FIELDS = ['email']
 
 
     'this is the external chat api cred we using'
