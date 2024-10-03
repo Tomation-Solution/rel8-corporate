@@ -68,6 +68,9 @@ To apply database migrations, run:
 python manage.py migrate
 ```
 
+## NB: Please run the commands in the release.sh
+
+
 ### 6. Create a Superuser
 
 Create a superuser locally with the following credentials:

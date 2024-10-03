@@ -14,13 +14,19 @@ from mymailing.views import send_mail
 from prospectivemember.models import man_prospective_model
 from Dueapp.views.payments import calMansPayment
 from celery import shared_task
+from dotenv import load_dotenv
+
+load_dotenv()
 
 def activateEmail(user,to_email):
     connection.set_schema(schema_name='man')
     mail_subject = 'Activate your user account'
     domain_mail = os.environ['domain_mail']
-    domain = 'https://man.rel8membership.com'
+    # domain = 'https://man.rel8membership.com'
+    # domain = 'http://localhost:3000'
+    domain = os.environ['DOMAIN'] 
     # domain = connection.schema_name+'.'+os.environ['domain']
+    print(f"Domain from .env: {domain}")
     data = {
         user:user,
         'domain':domain,

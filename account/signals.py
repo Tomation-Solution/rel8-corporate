@@ -27,14 +27,29 @@ def add_member_to_ExcoRole_group(sender,**kwargs):
 
 
 
-@receiver(post_save,sender=CommiteeGroup)
-def add_member_to_Commitee_group(sender,**kwargs):
-    isCreated = kwargs['created']
+# @receiver(post_save,sender=CommiteeGroup)
+# def add_member_to_Commitee_group(sender,**kwargs):
+#     isCreated = kwargs['created']
+#     commitee = kwargs['instance']
+#     novu = NovuProvider()
+#     if isCreated:
+#         novu.create_topic(commitee.name+'--commitee')
+#     if commitee.members:
+#         user_id = map(lambda commite:f'{commite.user.id}',commitee.member.all())
+#         user_id =list(user_id)
+#         novu.sub_user_to_topic(name=commitee.name,user_ids=user_id)
+
+@receiver(post_save, sender=CommiteeGroup)
+def add_member_to_commitee_group(sender, **kwargs):
+    is_created = kwargs['created']
     commitee = kwargs['instance']
     novu = NovuProvider()
-    if isCreated:
-        novu.create_topic(commitee.name+'--commitee')
-    if commitee.members:
-        user_id = map(lambda commite:f'{commite.user.id}',commitee.member.all())
-        user_id =list(user_id)
-        novu.sub_user_to_topic(name=commitee.name,user_ids=user_id)
+    
+    # Create topic when a new commitee group is created
+    if is_created:
+        novu.create_topic(commitee.name + '--commitee')
+    
+    # Subscribe members to the topic if there are members in the commitee group
+    if commitee.members.exists():
+        user_ids = [f'{member.user.id}' for member in commitee.members.all()]
+        novu.sub_user_to_topic(name=commitee.name, user_ids=user_ids)

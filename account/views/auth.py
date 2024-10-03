@@ -415,20 +415,47 @@ class AdminManageCommiteeGroupViewSet(viewsets.ModelViewSet):
         clean_data =user_serializers.MemberSerializer(instance=members,many=True)
         return Success_response(msg="Successfull",data=clean_data.data,status_code=status.HTTP_200_OK)
 
-    @action(['get','post'],detail=False,permission_classes=[IsAuthenticated])
-    def get_commitee(self,request,format=None):
-        if request.method.lower() == 'get':
-            if request.user.user_type in ['admin','super_admin']:
-                all_commitee_group =self.queryset.all()
-            else:
-                all_commitee_group =self.queryset.filter(members__in=[request.user.memeber.id])
-            clead_data = self.serializer_class(all_commitee_group,many=True)
+    # @action(['get','post'],detail=False,permission_classes=[IsAuthenticated])
+    # def get_commitee(self,request,format=None):
+    #     if request.method.lower() == 'get':
+    #         if request.user.user_type in ['admin','super_admin']:
+    #             all_commitee_group =self.queryset.all()
+    #         else:
+    #             all_commitee_group =self.queryset.filter(members__in=[request.user.memeber.id])
+    #         clead_data = self.serializer_class(all_commitee_group,many=True)
+    #     else:
+    #         commitee_id = request.query_params.get('commitee_id',None)
+    #         if commitee_id is None:raise CustomError({'error':'please provide commitee_id'})
+    #         commitee = self.queryset.get(id=commitee_id)
+    #         clead_data = self.serializer_class(commitee,many=False,context={'detail':True})
+    #     return Success_response(msg="Success",data =clead_data.data)
+
+    @action(['get'], detail=False, permission_classes=[IsAuthenticated])
+    def get_commitee(self, request, format=None):
+        # Handle GET request
+        if request.user.user_type in ['admin', 'super_admin']:
+            all_commitee_group = self.queryset.all()
         else:
-            commitee_id = request.query_params.get('commitee_id',None)
-            if commitee_id is None:raise CustomError({'error':'please provide commitee_id'})
+            all_commitee_group = self.queryset.filter(members__in=[request.user.memeber.id])
+        
+        clean_data = self.serializer_class(all_commitee_group, many=True)
+        return Success_response(msg="Success", data=clean_data.data, status_code=status.HTTP_200_OK)
+
+    @action(['post'], detail=False, permission_classes=[IsAuthenticated])
+    def get_commitee_details(self, request, format=None):
+        # Handle POST request
+        commitee_id = request.data.get('commitee_id', None)
+        if commitee_id is None:
+            raise CustomError({'error': 'please provide commitee_id'})
+        
+        try:
             commitee = self.queryset.get(id=commitee_id)
-            clead_data = self.serializer_class(commitee,many=False,context={'detail':True})
-        return Success_response(msg="Success",data =clead_data.data)
+        except user_models.CommiteeGroup.DoesNotExist:
+            raise CustomError({'error': 'Commitee does not exist'})
+
+        clean_data = self.serializer_class(commitee, many=False, context={'detail': True})
+        return Success_response(msg="Success", data=clean_data.data, status_code=status.HTTP_200_OK)
+
 
 
     def create(self, request, *args, **kwargs):
