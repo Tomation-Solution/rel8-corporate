@@ -70,9 +70,11 @@ class CreateManPropectiveMemberSerializer(serializers.ModelSerializer):
         if payment_type == 'flutterwave':
             if client_tenant.flutterwave_publickey =='null' or client_tenant.flutterwave_secret =='null':
                 raise CustomError({'error':'Flutterwave Key not active please reach out to the developer'})
+            FLUTTERWAVE_SECRET = client_tenant.flutterwave_secret
             url ='https://api.flutterwave.com/v3/payments'
             headers = {
-                'Authorization': f'Bearer {client_tenant.flutterwave_secret}',
+                'Authorization': f'Bearer {FLUTTERWAVE_SECRET}',
+                # 'Authorization': f'Bearer {client_tenant.flutterwave_secret}',
                 'Content-Type' : 'application/json',
                 'Accept': 'application/json',}
             reg = RegistrationAmountInfo.objects.all().first()
