@@ -89,7 +89,8 @@ class CreateManPropectiveMemberSerializer(serializers.ModelSerializer):
             'tx_ref': f'{generate_n(5)}---{"prospective_member_registration"}--{user.id}--{instance.id}--{schema_name}--{amount_to_be_paid}',
             'amount': f'{amount_to_be_paid}',
             'currency': "NGN",
-            'redirect_url': "https://www.google.com/",
+            'redirect_url': "https://www.manufacturersnigeria.org/",
+            # 'redirect_url': "https://www.google.com/",
             # 'meta':generateInfo.get('metadata'),
             'customer': {
                 'email':'test@gmail.com',
